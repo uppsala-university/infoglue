@@ -174,6 +174,7 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 			    //else
 			    //{
 				    ContentVO metaInfoContentVO = nodeDeliveryController.getBoundContent(getDatabase(), this.getTemplateController().getPrincipal(), this.getDeliveryContext().getSiteNodeId(), this.getDeliveryContext().getLanguageId(), true, "Meta information", this.getDeliveryContext());
+				    System.out.println("this.getDeliveryContext().getLanguageId()::::" + this.getDeliveryContext().getLanguageId());
 					decoratePageTemplate = decorateComponent(baseComponent, this.getTemplateController(), repositoryId, this.getDeliveryContext().getSiteNodeId(), this.getDeliveryContext().getLanguageId(), this.getDeliveryContext().getContentId()/*, metaInfoContentVO.getId()*/, 15, 0);
 					//System.out.println("decoratePageTemplate:" + decoratePageTemplate);
 					decoratePageTemplate = decorateTemplate(this.getTemplateController(), decoratePageTemplate, this.getDeliveryContext(), baseComponent);
@@ -738,6 +739,7 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
    
 	private String decorateComponent(InfoGlueComponent component, TemplateController templateController, Integer repositoryId, Integer siteNodeId, Integer languageId, Integer contentId/*, Integer metainfoContentId*/, int maxDepth, int currentDepth) throws Exception
 	{
+
 		if(currentDepth > maxDepth)
 		{
 			logger.error("A page with to many levels (possibly infinite loop) was found on " + templateController.getOriginalFullURL());
@@ -790,7 +792,7 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 				StringBuffer sb = new StringBuffer(componentString);
 				sb.insert(bodyIndex + 5, onContextMenu);
 				componentString = sb.toString();
-
+				System.out.println("Document componentPropertiesDocument = g" + languageId);
 				Document componentPropertiesDocument = getComponentPropertiesDOM4JDocument(templateController, siteNodeId, languageId, component.getContentId()); 
 				this.propertiesDivs += getComponentPropertiesDiv(templateController, repositoryId, siteNodeId, languageId, contentId, component.getId(), component.getContentId(), componentPropertiesDocument, component);
 
@@ -1206,7 +1208,7 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 		
 		//Locale locale = templateController.getLocale();
 	    Locale locale = templateController.getLocaleAvailableInTool(principal);
-
+	    System.out.println("langaugeId::: " + languageId);
 		timer.printElapsedTime("After locale");
 	    
 		String componentEditorUrl = CmsPropertyHandler.getComponentEditorUrl();
