@@ -2554,7 +2554,7 @@ function viewSource()
 	
 	function changeLanguage(siteNodeId, languageId, contentId)
 	{
-		console.log("languageID " + languageId);
+		alert("languageID " + languageId);
 		window.location.href = "ViewPage!renderDecoratedPage.action?siteNodeId=" + siteNodeId + "&languageId=" + languageId.value + "&contentId=" + contentId + "";
 	}
 	
