@@ -2880,14 +2880,9 @@ public class NodeDeliveryController extends BaseDeliveryController
 								}
 								
 								if(localizedSortOrder != null && !localizedSortOrder.equals(""))
-									try
-									{
-										siteNode.getValueObject().setLocalizedSortOrder(new Integer(localizedSortOrder));										
-									}
-									catch(Exception e)
-									{
-										logger.warn("The sitenode " + siteNode.getName() + " (ID: " + siteNode.getId() + ") had a bad localizedSortOrder:" + localizedSortOrder + ". Error:" + e.getMessage());
-									}
+								{
+									siteNode.getValueObject().setLocalizedSortOrder(new Integer(localizedSortOrder));
+								}
 							}
 						}
 						

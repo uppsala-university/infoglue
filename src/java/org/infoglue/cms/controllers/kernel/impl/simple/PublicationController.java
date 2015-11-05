@@ -868,34 +868,20 @@ public class PublicationController extends BaseController
 			   			{
 					    	if(event.getEntityClass().equals(ContentVersion.class.getName()))
 					    	{
-					    		try
+					    		ContentVersionVO eventCVVO = ContentVersionController.getContentVersionController().getContentVersionVOWithId(event.getEntityId(), db);
+					    		ContentVersionVO repoEventCVVO = ContentVersionController.getContentVersionController().getContentVersionVOWithId(repoEvent.getEntityId(), db);
+					    		if(eventCVVO.getContentId().equals(repoEventCVVO.getContentId()) && eventCVVO.getLanguageId().equals(repoEventCVVO.getLanguageId()))
 					    		{
-						    		ContentVersionVO eventCVVO = ContentVersionController.getContentVersionController().getContentVersionVOWithId(event.getEntityId(), db);
-						    		ContentVersionVO repoEventCVVO = ContentVersionController.getContentVersionController().getContentVersionVOWithId(repoEvent.getEntityId(), db);
-						    		if(eventCVVO.getContentId().equals(repoEventCVVO.getContentId()) && eventCVVO.getLanguageId().equals(repoEventCVVO.getLanguageId()))
-						    		{
-						    			EventController.delete(repoEvent, db);
-						    		}
-					    		}
-					    		catch(Exception e)
-					    		{
-					    			logger.error("Problem with repoEvent: " + repoEvent.getId() + " AND/OR event: " + event.getId()+ ". Error: " + e.getMessage());
+					    			EventController.delete(repoEvent, db);
 					    		}
 					    	}
 					    	else if(event.getEntityClass().equals(SiteNodeVersion.class.getName()))
 					    	{
-					    		try
+					    		SiteNodeVersionVO eventSNVVO = SiteNodeVersionController.getController().getSiteNodeVersionVOWithId(event.getEntityId(), db);
+					    		SiteNodeVersionVO repoEventSNVVO = SiteNodeVersionController.getController().getSiteNodeVersionVOWithId(repoEvent.getEntityId(), db);
+					    		if(eventSNVVO.getSiteNodeId().equals(repoEventSNVVO.getSiteNodeId()))
 					    		{
-						    		SiteNodeVersionVO eventSNVVO = SiteNodeVersionController.getController().getSiteNodeVersionVOWithId(event.getEntityId(), db);
-						    		SiteNodeVersionVO repoEventSNVVO = SiteNodeVersionController.getController().getSiteNodeVersionVOWithId(repoEvent.getEntityId(), db);
-						    		if(eventSNVVO.getSiteNodeId().equals(repoEventSNVVO.getSiteNodeId()))
-						    		{
-						    			EventController.delete(repoEvent, db);
-						    		}
-					    		}
-					    		catch(Exception e)
-					    		{
-					    			logger.error("Problem with repoEvent: " + repoEvent.getId() + " AND/OR event: " + event.getId()+ ". Error: " + e.getMessage());
+					    			EventController.delete(repoEvent, db);
 					    		}
 					    	}
 					    }

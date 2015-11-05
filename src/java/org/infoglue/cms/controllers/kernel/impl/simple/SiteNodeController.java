@@ -1520,14 +1520,7 @@ public class SiteNodeController extends BaseController
 					
 					if(localizedSortOrder != null && !localizedSortOrder.equals(""))
 					{
-						try
-						{
-							siteNode.getValueObject().setLocalizedSortOrder(new Integer(localizedSortOrder));
-						}
-						catch(Exception e)
-						{
-							logger.warn("The sitenode " + siteNode.getName() + " (ID: " + siteNode.getId() + ") had a bad localizedSortOrder:" + localizedSortOrder + ". Error:" + e.getMessage());
-						}
+						siteNode.getValueObject().setLocalizedSortOrder(new Integer(localizedSortOrder));
 					}
 					else
 						siteNode.getValueObject().setLocalizedSortOrder(new Integer(100));
