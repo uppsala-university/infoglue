@@ -1194,11 +1194,13 @@ public class ViewPageAction extends InfoGlueAbstractAction
 				    {
 				        PageInvoker pageInvoker = (PageInvoker)Class.forName(invokerClassName).newInstance();
 				        pageInvoker = pageInvoker.getDecoratedPageInvoker(templateController, deliveryContext);
+				        System.out.println("++++++++++++++++++++");
 				        System.out.println("deliveryContext.getLanguageId()::::" + deliveryContext.getLanguageId());
 				        System.out.println("this.getRequest().getParameter(languageId)::::" + this.getRequest().getParameter("languageId"));
 				        System.out.println("templateController.getLanguageId()::::" + templateController.getLanguageId());
 				        pageInvoker.setParameters(dbWrapper, this.getRequest(), this.getResponse(), templateController, deliveryContext);
 				        pageInvoker.deliverPage();
+				        System.out.println("--------------------");
 				    }
 				    catch(ClassNotFoundException e)
 				    {

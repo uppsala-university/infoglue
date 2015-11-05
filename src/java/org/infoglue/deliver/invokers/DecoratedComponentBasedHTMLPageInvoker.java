@@ -1209,10 +1209,10 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 		
 		//Locale locale = templateController.getLocale();
 	    Locale locale = templateController.getLocaleAvailableInTool(principal);
-	    System.out.println("+++++++++++++++++++++");
+	    System.out.println("&&&&&&&&&&&&&&&&&&&");
 	    System.out.println("langaugeId::: " + languageId);
 	    System.out.println("Component::: " + componentId);
-	    System.out.println("---------------------");
+	    System.out.println("????????????????????");
 		timer.printElapsedTime("After locale");
 	    
 		String componentEditorUrl = CmsPropertyHandler.getComponentEditorUrl();
