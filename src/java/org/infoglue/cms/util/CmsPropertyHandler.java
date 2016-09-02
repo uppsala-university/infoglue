@@ -3201,4 +3201,8 @@ public class CmsPropertyHandler
 		return Boolean.parseBoolean(cleanReferencesAfterDelete);
 	}
 	
+	public static String getFailedToRenderPageHelpUrl()
+	{
+	    return getServerNodeProperty("failedToRenderPageHelpUrl", true, "");
+	}
 }
