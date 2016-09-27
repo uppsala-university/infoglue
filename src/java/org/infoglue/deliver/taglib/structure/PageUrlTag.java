@@ -27,6 +27,7 @@ import java.util.Map;
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.JspTagException;
 
+import org.apache.log4j.Logger;
 import org.exolab.castor.jdo.Database;
 import org.infoglue.deliver.applications.databeans.DeliveryContext;
 import org.infoglue.deliver.controllers.kernel.URLComposer;
@@ -42,9 +43,7 @@ import org.netbeans.lib.cvsclient.commandLine.command.log;
 
 public class PageUrlTag extends ComponentLogicTag
 {
-	/**
-	 * 
-	 */
+	private final static Logger logger = Logger.getLogger(PageUrlTag.class.getName());
 	private static final long serialVersionUID = 4050485595074016051L;
 	
 	private String propertyName;
@@ -76,12 +75,12 @@ public class PageUrlTag extends ComponentLogicTag
         this.useStructureInheritance = true;
         this.languageId = null;
         this.siteNodeId = null;
-        this.contentId = null;
         this.extraParameters = null;
         this.includeLanguageId = true;
         this.operatingMode = null;
         this.isDecorated = null;
-        
+        this.contentId = -1;
+        this.forceHTTPProtocol = false;
         return EVAL_PAGE;
     }
 
@@ -108,7 +107,7 @@ public class PageUrlTag extends ComponentLogicTag
 	    		operatingMode = dc.getOperatingMode();
 	    	}
 	    	
-	    	if (isDecorated == null ||operatingMode.equalsIgnoreCase("3") && isDecorated == true) {
+	    	if (isDecorated == null ||operatingMode.equalsIgnoreCase("3") && isDecorated) {
 	    		/* live pages can not med combined with decorated mode */
 		    	isDecorated = false;
 	    	}
@@ -116,7 +115,8 @@ public class PageUrlTag extends ComponentLogicTag
 	    	String tempOperatingMode = dc.getOperatingMode();
 	    	dc.setOperatingMode(operatingMode);
 	    	try {
-	    		url = getController().getPageUrl(siteNodeId, languageId, includeLanguageId, -1, operatingMode, isDecorated);
+	    		url = getController().getPageUrl(siteNodeId, languageId, includeLanguageId, operatingMode, isDecorated);
+	   
 	    	} finally {
 		    	/* restoring operatingMode */
 		    	dc.setOperatingMode(tempOperatingMode);	
@@ -125,7 +125,9 @@ public class PageUrlTag extends ComponentLogicTag
 	    if (forceHTTPProtocol || CmsPropertyHandler.getForceHTTPProtocol()) {
 	    	url = url.replaceFirst("https:", "http:");
 	    }
-
+	    if (url == "") {
+	    	logger.warn("PageUrlTag returned a empty url");
+	    }
 	    return url;
 	}
 

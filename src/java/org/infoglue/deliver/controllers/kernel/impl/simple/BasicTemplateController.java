@@ -141,7 +141,7 @@ import com.opensymphony.module.propertyset.PropertySetManager;
  * delegator to other more specialized classes.
  */
 
-public class BasicTemplateController implements TemplateController
+	public class BasicTemplateController implements TemplateController
 {
 	private final static DOMBuilder domBuilder = new DOMBuilder();
 	
@@ -5946,7 +5946,7 @@ public class BasicTemplateController implements TemplateController
 		return pageUrl;
 	}
 	
-	public String getPageUrl(Integer siteNodeId, Integer languageId, boolean includeLanguageId, Integer contentId,  String operatingMode, boolean isDecorated) 
+	public String getPageUrl(Integer siteNodeId, boolean includeLanguageId, String operatingMode, boolean isDecorated) 
 	{
 		String pageUrl = "";
 		
@@ -8875,6 +8875,14 @@ public class BasicTemplateController implements TemplateController
 		}
 		return value;
 	}
+
+	@Override
+	public String getPageUrl(Integer siteNodeId, Integer languageId, boolean includeLanguageId, String operatingMode,
+			boolean isDecorated) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 
 
 }
