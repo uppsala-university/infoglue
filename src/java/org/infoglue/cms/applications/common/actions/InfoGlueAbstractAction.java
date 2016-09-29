@@ -1674,6 +1674,12 @@ public abstract class InfoGlueAbstractAction extends WebworkAbstractAction
 			sb.insert(0, "[" + repoVO.getName() + "] ");
 		}
 		
+		if(includeRepoName)
+		{
+			RepositoryVO repoVO = RepositoryController.getController().getRepositoryVOWithId(startSiteNodeVO.getRepositoryId());
+			sb.insert(0, "[" + repoVO.getName() + "] ");
+		}
+		
 		return sb.toString();
 	}
 

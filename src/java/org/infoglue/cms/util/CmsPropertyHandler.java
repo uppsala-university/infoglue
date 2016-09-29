@@ -956,7 +956,22 @@ public class CmsPropertyHandler
 	{
 	    return getServerNodeProperty("disableAssetDeletionInLiveThread", true, "false");
 	}
-
+	
+	public static float getWebappVersion()
+	{
+		String webappVersion = getServerNodeProperty("webappVersion", true, "2.3");
+		try
+		{
+			return Float.parseFloat(webappVersion);
+		}
+		catch(Exception e) 
+		{
+			logger.error("Problem getting webapp version: " + e.getMessage());
+		}
+		
+		return 1F;
+	}
+	
 	public static String getExtranetCookieTimeout()
 	{
 	    return getServerNodeProperty("extranetCookieTimeout", true, "1800");
@@ -3180,6 +3195,60 @@ public class CmsPropertyHandler
 		String cleanReferencesAfterDelete = getServerNodeProperty("cleanReferencesAfterDelete", true, "true");
 	
 		return Boolean.parseBoolean(cleanReferencesAfterDelete);
+	}
+		/**
+	 * Indicates that the structure tool should be reloaded when activated
+	 */
+	public static boolean getReloadStructureOnActivation()
+	{
+		return Boolean.parseBoolean(getServerNodeProperty("reloadStructureOnActivation", false, "false"));
+	}
+
+	public static boolean getUseWriteForAccessControlInWorking() 
+	{
+		return Boolean.parseBoolean(getServerNodeProperty("useWriteForAccessControlInWorking", false, "false"));
+	}
+		/**
+	 * If the user has set a error-url to http://www.google.se we could either sendRedirect or do a http-backend include. The incude 
+	 * will be able to return the error page html AND a 404 status code. The old method will transfer the user and give robots etc the impression that 
+	 * the page just moved.
+	 * @return
+	 */
+	public static String getResponseMethodOnFullErrorURL()
+	{
+		return getServerNodeProperty("responseMethodOnFullErrorURL", true, "include");
+	}
+		/**
+	 * Enable disk based deployment or not?
+	 * @return
+	 */
+	public static boolean getEnableDiskBasedDeployment()
+	{
+		String enableDiskBasedDeployment = getServerNodeProperty("enableDiskBasedDeployment", true, "false");
+	
+		return Boolean.parseBoolean(enableDiskBasedDeployment);
+	}
+	
+	/**
+	 * Enable disk based deployment or not?
+	 * @return
+	 */
+	public static boolean getEnableDiskBasedDeployment(boolean skipCaches)
+	{
+		String enableDiskBasedDeployment = getServerNodeProperty("enableDiskBasedDeployment", true, "false", skipCaches);
+	
+		return Boolean.parseBoolean(enableDiskBasedDeployment);
+	}
+	/**
+	 * The folder to sync for changes. See doc for folder structure and content.
+	 * @return
+	 */
+	public static String getDiskBasedDeploymentBasePath()
+	{
+		String diskBasedDeploymentBasePath = getServerNodeProperty("diskBasedDeploymentBasePath", true, "");
+		if(diskBasedDeploymentBasePath != null && diskBasedDeploymentBasePath.contains("\\"))
+			diskBasedDeploymentBasePath = diskBasedDeploymentBasePath.replace("\\", "/");
+		return diskBasedDeploymentBasePath;
 	}
 	
 }

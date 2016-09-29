@@ -68,4 +68,9 @@ public class ViewStructureToolAction extends ViewCMSAbstractToolAction
 	{
 		return siteNodeId;
 	}
+
+	public boolean getIsReloadStructureOnActivation()
+	{
+		return CmsPropertyHandler.getReloadStructureOnActivation();
+	}
 }

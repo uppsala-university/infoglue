@@ -1,3 +1,4 @@
+
 /* ===============================================================================
  *
  * Part of the InfoGlue Content Management Platform (www.infoglue.org)
@@ -89,6 +90,7 @@ import org.infoglue.cms.entities.structure.impl.simple.SmallSiteNodeVersionImpl;
 import org.infoglue.cms.entities.structure.impl.simple.SmallestSiteNodeImpl;
 import org.infoglue.cms.entities.workflow.impl.simple.WorkflowDefinitionImpl;
 import org.infoglue.cms.exception.Bug;
+import org.infoglue.cms.filesync.DevelopmentResourcesSyncService;
 import org.infoglue.cms.security.InfoGluePrincipal;
 import org.infoglue.cms.util.ChangeNotificationController;
 import org.infoglue.cms.util.CmsPropertyHandler;
@@ -336,7 +338,8 @@ public class CmsJDOCallback implements CallbackInterceptor
 					   contentVersion.getOwningContent().getContentTypeDefinition().getName().equalsIgnoreCase("PagePartTemplate")))
 					{
 						ComponentController.getController().reIndexComponentContentsDelayed(contentVersion.getOwningContent().getId());
-
+						if(CmsPropertyHandler.getEnableDiskBasedDeployment())
+							DevelopmentResourcesSyncService.getInstance().writeChangesToDiskDelayed(contentVersion.getId());
 					}
 
 					CacheController.clearCacheForGroup("registryCache", "" + ("org.infoglue.cms.entities.content.ContentVersion_" + getObjectIdentity(object)).hashCode());						
@@ -373,7 +376,8 @@ public class CmsJDOCallback implements CallbackInterceptor
 					   (pagePartTemplateMetaInfoCTDVO != null && contentVO.getContentTypeDefinitionId().equals(pagePartTemplateMetaInfoCTDVO.getId()))))
 					{
 						ComponentController.getController().reIndexComponentContentsDelayed(contentVersion.getContentId());
-
+						if(CmsPropertyHandler.getEnableDiskBasedDeployment())
+							DevelopmentResourcesSyncService.getInstance().writeChangesToDiskDelayed(contentVersion.getId());
 					}
 
 					CacheController.clearCacheForGroup("registryCache", "" + ("org.infoglue.cms.entities.content.ContentVersion_" + getObjectIdentity(object)).hashCode());
@@ -409,7 +413,10 @@ public class CmsJDOCallback implements CallbackInterceptor
 				clearCache(DigitalAssetImpl.class);
 				//logger.error("We should delete all images with digitalAssetId " + getObjectIdentity(object));
 				DigitalAssetController.deleteCachedDigitalAssets((Integer)getObjectIdentity(object));
-
+				if(CmsPropertyHandler.getEnableDiskBasedDeployment())
+				{
+					DevelopmentResourcesSyncService.getInstance().writeAssetChangesToDiskDelayed((Integer)getObjectIdentity(object));
+				}
 			}
 			else if(object.getClass().getName().equals(DigitalAssetImpl.class.getName()))
 			{
@@ -419,7 +426,8 @@ public class CmsJDOCallback implements CallbackInterceptor
 				clearCache(MediumDigitalAssetImpl.class);
 				//logger.error("We should delete all images with digitalAssetId " + getObjectIdentity(object));
 				DigitalAssetController.deleteCachedDigitalAssets((Integer)getObjectIdentity(object));
-
+				if(CmsPropertyHandler.getEnableDiskBasedDeployment())
+					DevelopmentResourcesSyncService.getInstance().writeAssetChangesToDiskDelayed((Integer)getObjectIdentity(object));
 			}
 			else if(object.getClass().getName().equals(SiteNodeImpl.class.getName()))
 			{
@@ -758,6 +766,11 @@ public class CmsJDOCallback implements CallbackInterceptor
 			return;
 		}
 
+		if(c.getName().contains("ContentImpl"))
+		{
+			System.out.println("c.getName():" + c.getName());
+			//Thread.dumpStack();
+		}
 		
 		Database db = CastorDatabaseService.getDatabase();
 
@@ -958,8 +971,7 @@ public class CmsJDOCallback implements CallbackInterceptor
 								CacheController.clearCacheForGroup("childContentCache", "content_" + parentContentVO.getParentContentId());
 							}
 							else
-								logger.error("Null parent - skipping");						
-						}
+								logger.error("Null parent - skipping");						}
 					}
 				}
 				catch (Exception e) 
@@ -988,7 +1000,7 @@ public class CmsJDOCallback implements CallbackInterceptor
 						}
 						else
 							logger.error("Null parent - skipping");
-					} 
+					}
 				}
 				catch (Exception e) 
 				{
@@ -1033,6 +1045,9 @@ public class CmsJDOCallback implements CallbackInterceptor
 				
 				CacheController.clearCacheForGroup("contentVersionCache", "content_" + contentVersion.getContentId());
 
+				if(CmsPropertyHandler.getEnableDiskBasedDeployment())
+					DevelopmentResourcesSyncService.getInstance().writeChangesToDiskDelayed(contentVersion.getId());
+
 				clearCache(MediumContentVersionImpl.class);
 				clearCache(SmallContentVersionImpl.class);
 				clearCache(SmallestContentVersionImpl.class);
@@ -1042,6 +1057,9 @@ public class CmsJDOCallback implements CallbackInterceptor
 				MediumContentVersionImpl contentVersion = (MediumContentVersionImpl)object;
 
 				CacheController.clearCacheForGroup("contentVersionCache", "content_" + contentVersion.getContentId());
+
+				if(CmsPropertyHandler.getEnableDiskBasedDeployment())
+					DevelopmentResourcesSyncService.getInstance().writeChangesToDiskDelayed(contentVersion.getId());
 
 				clearCache(ContentVersionImpl.class);
 				clearCache(SmallContentVersionImpl.class);
@@ -1359,7 +1377,8 @@ public class CmsJDOCallback implements CallbackInterceptor
 					   (pagePartTemplateMetaInfoCTDVO != null && contentVO.getContentTypeDefinitionId().equals(pagePartTemplateMetaInfoCTDVO.getId()))))
 					{
 						ComponentController.getController().reIndexComponentContentsDelayed(contentVersion.getContentId());
-
+						if(CmsPropertyHandler.getEnableDiskBasedDeployment())
+							DevelopmentResourcesSyncService.getInstance().writeChangesToDiskDelayed(contentVersion.getId());
 					}
 					CacheController.clearCacheForGroup("contentVersionCache", "content_" + contentVersion.getContentId());
 				}

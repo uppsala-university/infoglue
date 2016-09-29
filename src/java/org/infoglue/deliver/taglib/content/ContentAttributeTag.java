@@ -58,7 +58,7 @@ public class ContentAttributeTag extends ComponentLogicTag
 	
     public final static Logger logger = Logger.getLogger(ContentAttributeTag.class.getName());
 
-	private ContentVersionVO contentVersionVO;
+	private ContentVersionVO contentVersion;
 	private Integer contentId;
 	private String propertyName;
 	private String attributeName;
@@ -94,45 +94,35 @@ public class ContentAttributeTag extends ComponentLogicTag
 	    String result = null;
 	    
 	    Timer t = new Timer();
-	    if(contentVersionVO != null)
+	    if(contentVersion != null)
 	    {
 	    	if(!parse)
             {
-                result = getController().getContentAttribute(contentVersionVO, attributeName, disableEditOnSight);
-            
+                result = getController().getContentAttribute(contentVersion, attributeName, disableEditOnSight);
                 if(escapeVelocityCode)
                 	result = result.replaceAll("\\$(?!(\\.|\\(|templateLogic\\.(getPageUrl|getInlineAssetUrl|languageId)))", "&#36;");
             }
 	        else
 	        {
-	            result = getController().getParsedContentAttribute(contentVersionVO, attributeName, disableEditOnSight);
+	            result = getController().getParsedContentAttribute(contentVersion, attributeName, disableEditOnSight);
             }
 	    }
 	    else if(contentId != null)
         {
             if(!parse)
-            {	
-
-            	result = getController().getContentAttribute(contentId, languageId, useAttributeLanguageFallback, attributeName);
-            	
+            {
+                result = getController().getContentAttribute(contentId, languageId, attributeName, disableEditOnSight);
         	    //result = result.replaceAll("#", "&#35;");
-                if(escapeVelocityCode) {
+                if(escapeVelocityCode)
                 	result = result.replaceAll("\\$(?!(\\.|\\(|templateLogic\\.(getPageUrl|getInlineAssetUrl|languageId)))", "&#36;");
-                }
             }
 	        else
 	        {
-				if(!escapeVelocityCode) {
-
-					result = getController().getContentAttribute(contentId, languageId, useAttributeLanguageFallback, attributeName);
-	          
-	            	
-				} else {
-					
-	            		result = getController().getContentAttribute(contentId, languageId, useAttributeLanguageFallback, attributeName);
-	            	
-				}
-	        }
+				if(!escapeVelocityCode)
+		            result = getController().getParsedContentAttribute(contentId, languageId, attributeName, disableEditOnSight);
+				else
+		            result = getController().getEscapedParsedContentAttribute(contentId, languageId, attributeName, disableEditOnSight);
+		    }
         }
         else if(propertyName != null)
         {
@@ -177,15 +167,15 @@ public class ContentAttributeTag extends ComponentLogicTag
         {
             disableEditOnSight = true;
         }
-
+        
         result = getContentAttributeValue(this.languageId);
-
+        
         if((result == null || result.trim().equals("")) && useAttributeLanguageFallback)
 		{
 			try
 			{
-				LanguageVO masterLanguageVO = LanguageDeliveryController.getLanguageDeliveryController().getMasterLanguageForSiteNode(this.getController().getDatabase(), this.getController().getSiteNodeId());
-				result = getContentAttributeValue(masterLanguageVO.getLanguageId());
+	            LanguageVO masteLanguageVO = LanguageDeliveryController.getLanguageDeliveryController().getMasterLanguageForSiteNode(this.getController().getDatabase(), this.getController().getSiteNodeId());
+			    result = getContentAttributeValue(masteLanguageVO.getLanguageId());
 			}
 			catch(Exception e)
 			{
@@ -205,7 +195,7 @@ public class ContentAttributeTag extends ComponentLogicTag
         //Resetting the full url to the previous state
         getController().getDeliveryContext().setUseFullUrl(previousSetting);
 
-        contentVersionVO = null;
+        contentVersion = null;
 	    contentId = null;
 		propertyName = null;
 	    attributeName = null;;
@@ -273,9 +263,14 @@ public class ContentAttributeTag extends ComponentLogicTag
         this.languageId = evaluateInteger("contentAttribute", "languageId", languageId);
     }
 
-	public void setContentVersion(final String contentVersion) throws JspException
+	public void setContentVersion(String contentVersion) throws JspException
 	{
-		this.contentVersionVO = (ContentVersionVO)evaluate("contentAttribute", "contentVersion", contentVersion, ContentVersionVO.class);
+		this.contentVersion = (ContentVersionVO)evaluate("contentAttribute", "contentVersion", contentVersion, ContentVersionVO.class);
+	}
+
+	public void setContentVersionObject(ContentVersionVO contentVersion) throws JspException
+	{
+		this.contentVersion = contentVersion;
 	}
 
     public void setFullBaseUrl(boolean fullBaseUrl)
