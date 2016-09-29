@@ -63,6 +63,26 @@
             <required>false</required>
             <rtexprvalue>true</rtexprvalue>
         </attribute>
+         <attribute>
+            <name>forceHTTPProtocol</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+        <attribute>
+    	    <name>includeLanguageId</name>
+        	<required>false</required>
+	        <rtexprvalue>true</rtexprvalue>
+    	</attribute>
+    	<attribute>
+    	    <name>operatingMode</name>
+        	<required>false</required>
+	        <rtexprvalue>true</rtexprvalue>
+    	</attribute>
+    	<attribute>
+    	    <name>isDecorated</name>
+        	<required>false</required>
+	        <rtexprvalue>true</rtexprvalue>
+    	</attribute>
     </tag>
     
 	<tag>
@@ -78,6 +98,11 @@
         <attribute>
     	    <name>languageCode</name>
         	<required>true</required>
+	        <rtexprvalue>true</rtexprvalue>
+    	</attribute>
+    	<attribute>
+    	    <name>includeLanguageId</name>
+        	<required>false</required>
 	        <rtexprvalue>true</rtexprvalue>
     	</attribute>
     </tag>
