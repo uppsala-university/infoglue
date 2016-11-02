@@ -34,6 +34,7 @@ import org.exolab.castor.jdo.Database;
 import org.infoglue.cms.applications.common.VisualFormatter;
 import org.infoglue.cms.controllers.kernel.impl.simple.AccessRightController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentController;
+import org.infoglue.cms.controllers.kernel.impl.simple.ContentVersionController;
 import org.infoglue.cms.controllers.kernel.impl.simple.RepositoryController;
 import org.infoglue.cms.controllers.kernel.impl.simple.SiteNodeController;
 import org.infoglue.cms.entities.content.ContentVO;
@@ -76,6 +77,7 @@ public class BasicURLComposer extends URLComposer
 		String protectedProtocolPort = CmsPropertyHandler.getProtectedProtocolPort();
 		String unprotectedProtocolPort = CmsPropertyHandler.getUnprotectedProtocolPort();
 
+        String disableEmptyUrls = CmsPropertyHandler.getDisableEmptyUrls();
         if(siteNodeId == null || contentId == null || languageId == null || assetKey == null)
             return "";
             
@@ -390,8 +392,10 @@ public class BasicURLComposer extends URLComposer
     		return "";
     	}
     	
-    	if(contentId == null || contentId == 0)
+    	if(contentId == null || contentId == 0) 
+    	{
     		contentId = -1;
+    	}
 
         
         boolean makeAccessBasedProtocolAdjustments = false;
@@ -434,9 +438,9 @@ public class BasicURLComposer extends URLComposer
 			}
 
 			String deriveProtocolWhenUsingProtocolRedirects = RepositoryDeliveryController.getRepositoryDeliveryController().getExtraPropertyValue(siteNodeVO.getRepositoryId(), "deriveProtocolWhenUsingProtocolRedirects");
-			if(deriveProtocolWhenUsingProtocolRedirects == null || deriveProtocolWhenUsingProtocolRedirects.equals("") || !deriveProtocolWhenUsingProtocolRedirects.equals("true") || !deriveProtocolWhenUsingProtocolRedirects.equals("false"))
+			if(deriveProtocolWhenUsingProtocolRedirects == null || deriveProtocolWhenUsingProtocolRedirects.equals("") || !deriveProtocolWhenUsingProtocolRedirects.equals("true") || !deriveProtocolWhenUsingProtocolRedirects.equals("false")) {
 				deriveProtocolWhenUsingProtocolRedirects = CmsPropertyHandler.getDeriveProtocolWhenUsingProtocolRedirects();
-
+			}
 			boolean schemaShouldChange = schema != null && !schema.equalsIgnoreCase("https");
 			if(deriveProtocolWhenUsingProtocolRedirects.equalsIgnoreCase("true") && operatingMode.equals("3") && schemaShouldChange)
 			{
@@ -449,26 +453,26 @@ public class BasicURLComposer extends URLComposer
 				{
 					Principal anonymousPrincipal = getAnonymousPrincipal();
 					isAnonymousAccepted = AccessRightController.getController().getIsPrincipalAuthorized(db, (InfoGluePrincipal)anonymousPrincipal, "SiteNodeVersion.Read", protectedSiteNodeVersionId.toString());
-					//logger.info("anonymousPrincipal has access:" + isAnonymousAccepted);
+					logger.info("anonymousPrincipal has access:" + isAnonymousAccepted);
 				}
 
 				if(protectedSiteNodeVersionId != null && !isAnonymousAccepted)
 				{
-					//logger.info("anonymousPrincipal has no access - switching to secure line");
-					if(originalFullURL.indexOf(unprotectedProtocolName + "://") > -1)
+					logger.info("anonymousPrincipal has no access - switching to secure line");
+					if(originalFullURL.indexOf(unprotectedProtocolName + "://") == 0)
 					{
 						useDNSNameInUrls = true;
-						//deliveryContext.setUseFullUrl(true);
+					
 						makeAccessBasedProtocolAdjustments = true;	
 						makeAccessBasedProtocolAdjustmentsIntoProtected = true;
 					}
 				}
 				else
 				{
-					if(originalFullURL.indexOf(protectedProtocolName + "://") > -1)
+					if(originalFullURL.indexOf(protectedProtocolName + "://") == 0)
 					{
 						useDNSNameInUrls = true;
-						//deliveryContext.setUseFullUrl(true);
+					
 						makeAccessBasedProtocolAdjustments = true;	
 						makeAccessBasedProtocolAdjustmentsIntoProtected = false;
 					}
@@ -481,40 +485,29 @@ public class BasicURLComposer extends URLComposer
 		}
 
 		boolean isDecoratedUrl = request == null ? false : request.getRequestURI().indexOf("!renderDecoratedPage") > -1;
-		if (isDecoratedUrl && !isDecorated)
-			isDecoratedUrl = isDecorated;
+		
+		boolean useDecorated = isDecoratedUrl && isDecorated; 
 		
 		logger.debug("URL is decorated: " + isDecoratedUrl);
 		logger.debug("isDecorated was: " + isDecorated);
 
+		/* Determine to create a nice uri or not 
+		 * */
+		boolean createNiceURI = enableNiceURI && !deliveryContext.getDisableNiceUri() && !useDecorated;
 		
-		boolean createUnDecoratedUrlWithURI = enableNiceURI && (!isDecoratedUrl && !deliveryContext.getDisableNiceUri()) && !isDecorated;
-
-
-		if (createUnDecoratedUrlWithURI)
+		if (createNiceURI)
 		{
-			url = getUndecoratedUrl(db, infoGluePrincipal, siteNodeId, languageId, includeLanguageId, contentId, applicationContext, deliveryContext, enableNiceURI, useDNSNameInUrls, operatingMode, isDecorated, context);
-			System.out.println("Even more end:" + url);
+			
+			url = getNiceURIUrl(db, infoGluePrincipal, siteNodeId, languageId, includeLanguageId, contentId, applicationContext, deliveryContext, enableNiceURI, useDNSNameInUrls, operatingMode, isDecorated, context);
+			
 		}
         else
         {
-        	/*
-        	 * Creating a decorated
-        	 * */
-            if(useDNSNameInUrls)
-            {
-            	
-            	url = getDecoratedUrlWithDNS(url, siteNodeId, languageId, contentId, isDecorated, operatingMode, isDecoratedUrl, context, db);
-        		if(request != null && request.getScheme().equalsIgnoreCase("https"))
-        		{
-        			url = url.replaceFirst(unprotectedProtocolName + "://", protectedProtocolName + "://").replaceFirst(unprotectedProtocolPort, protectedProtocolPort);
-        		}
-			}
-			else
-			{
-				
-				url = getDecoratedUrlWithoutDNS(url, siteNodeId, languageId, contentId, isDecorated, isDecoratedUrl, makeAccessBasedProtocolAdjustments, deliveryContext);
-            }
+        	url = getDecoratedUrl(url, siteNodeId, languageId, contentId, isDecorated, operatingMode, isDecoratedUrl, context, db);
+        	if(request != null && request.getScheme().equalsIgnoreCase("https"))
+        	{
+        		url = url.replaceFirst(unprotectedProtocolName + "://", protectedProtocolName + "://").replaceFirst(unprotectedProtocolPort, protectedProtocolPort);
+        	}
         }
         
         if(logger.isInfoEnabled())
@@ -532,18 +525,21 @@ public class BasicURLComposer extends URLComposer
         		logger.info("unprotectedProtocolPort:" + unprotectedProtocolPort);
         		logger.info("protectedProtocolPort:" + protectedProtocolPort);
 			}
-        	System.out.println("makeAccessBasedProtocolAdjustmentsIntoProtected:" + makeAccessBasedProtocolAdjustmentsIntoProtected);
-			if(makeAccessBasedProtocolAdjustmentsIntoProtected)
+        	
+			if(makeAccessBasedProtocolAdjustmentsIntoProtected) {
 				url = url.replaceFirst(unprotectedProtocolName + "://", protectedProtocolName + "://").replaceFirst(unprotectedProtocolPort, protectedProtocolPort);
+			} 
 			else
+			{
 				url = url.replaceFirst(protectedProtocolName + "://", unprotectedProtocolName + "://").replaceFirst(protectedProtocolPort, unprotectedProtocolPort);
+			}
 			logger.info("Adjusted url:" + url);
         }
-        System.out.println("Super END:" + url);
+        
         return url;
     }
 	
-	private String getUndecoratedUrl(Database db, InfoGluePrincipal infoGluePrincipal, Integer siteNodeId, Integer languageId, boolean includeLanguageId, Integer contentId, String applicationContext, DeliveryContext deliveryContext, Boolean enableNiceURI, Boolean useDNSNameInUrls, String operatingMode, boolean isDecorated, String context) throws Bug, Exception {
+	private String getNiceURIUrl(Database db, InfoGluePrincipal infoGluePrincipal, Integer siteNodeId, Integer languageId, boolean includeLanguageId, Integer contentId, String applicationContext, DeliveryContext deliveryContext, Boolean enableNiceURI, Boolean useDNSNameInUrls, String operatingMode, boolean isDecorated, String context) throws Bug, Exception {
 		logger.info("The url should not be decorated and displayed as uri");
 		SiteNodeVO siteNode = SiteNodeController.getController().getSmallSiteNodeVOWithId(siteNodeId, db);
 		String url = "";
@@ -888,7 +884,7 @@ public class BasicURLComposer extends URLComposer
 	}
 	
 	
-	private String getDecoratedUrlWithDNS(String url, Integer siteNodeId, Integer languageId, Integer contentId, boolean isDecorated, String operatingMode, boolean isDecoratedUrl, String context, Database db) throws Bug, Exception {
+	private String getDecoratedUrl(String url, Integer siteNodeId, Integer languageId, Integer contentId, boolean isDecorated, String operatingMode, boolean isDecoratedUrl, String context, Database db) throws Bug, Exception {
 		if(siteNodeId == null)
 			siteNodeId = new Integer(-1);
 
@@ -1037,9 +1033,11 @@ public class BasicURLComposer extends URLComposer
 			}
 
 			String deriveProtocolWhenUsingProtocolRedirects = RepositoryDeliveryController.getRepositoryDeliveryController().getExtraPropertyValue(siteNodeVO.getRepositoryId(), "deriveProtocolWhenUsingProtocolRedirects");
-			if(deriveProtocolWhenUsingProtocolRedirects == null || deriveProtocolWhenUsingProtocolRedirects.equals("") || !deriveProtocolWhenUsingProtocolRedirects.equals("true") || !deriveProtocolWhenUsingProtocolRedirects.equals("false"))
+			if(deriveProtocolWhenUsingProtocolRedirects == null || deriveProtocolWhenUsingProtocolRedirects.equals("") || !deriveProtocolWhenUsingProtocolRedirects.equals("true") || !deriveProtocolWhenUsingProtocolRedirects.equals("false")) 
+			{
 				deriveProtocolWhenUsingProtocolRedirects = CmsPropertyHandler.getDeriveProtocolWhenUsingProtocolRedirects();
-
+			}
+			
 			boolean schemaShouldChange = schema != null && !schema.equalsIgnoreCase("https");
 			if(deriveProtocolWhenUsingProtocolRedirects.equalsIgnoreCase("true") && operatingMode.equals("3") && schemaShouldChange)
 			{
@@ -1052,26 +1050,26 @@ public class BasicURLComposer extends URLComposer
 				{
 					Principal anonymousPrincipal = getAnonymousPrincipal();
 					isAnonymousAccepted = AccessRightController.getController().getIsPrincipalAuthorized(db, (InfoGluePrincipal)anonymousPrincipal, "SiteNodeVersion.Read", protectedSiteNodeVersionId.toString());
-					//logger.info("anonymousPrincipal has access:" + isAnonymousAccepted);
+					logger.info("anonymousPrincipal has access:" + isAnonymousAccepted);
 				}
 
 				if(protectedSiteNodeVersionId != null && !isAnonymousAccepted)
 				{
-					//logger.info("anonymousPrincipal has no access - switching to secure line");
-					if(originalFullURL.indexOf(unprotectedProtocolName + "://") > -1)
+					logger.info("anonymousPrincipal has no access - switching to secure line");
+					if(originalFullURL.indexOf(unprotectedProtocolName + "://") == 0)
 					{
 						useDNSNameInUrls = "true";
-						//deliveryContext.setUseFullUrl(true);
+						deliveryContext.setUseFullUrl(true);
 						makeAccessBasedProtocolAdjustments = true;	
 						makeAccessBasedProtocolAdjustmentsIntoProtected = true;
 					}
 				}
 				else
 				{
-					if(originalFullURL.indexOf(protectedProtocolName + "://") > -1)
+					if(originalFullURL.indexOf(protectedProtocolName + "://") == 0)
 					{
 						useDNSNameInUrls = "true";
-						//deliveryContext.setUseFullUrl(true);
+						
 						makeAccessBasedProtocolAdjustments = true;	
 						makeAccessBasedProtocolAdjustmentsIntoProtected = false;
 					}
@@ -1102,7 +1100,7 @@ public class BasicURLComposer extends URLComposer
 				String dnsName = repositoryVO.getDnsName();
 				logger.info("dnsName:" + dnsName + " for siteNode " + siteNode.getName());
 
-				//    		    String operatingMode = CmsPropertyHandler.getOperatingMode();
+				
 				String keyword = "";
 				if (operatingMode.equalsIgnoreCase("0"))
 				{
