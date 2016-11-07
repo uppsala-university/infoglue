@@ -5946,13 +5946,13 @@ import com.opensymphony.module.propertyset.PropertySetManager;
 		return pageUrl;
 	}
 	
-	public String getPageUrl(Integer siteNodeId, boolean includeLanguageId, String operatingMode, boolean isDecorated) 
+	public String getPageUrl(Integer siteNodeId, Integer languageId, boolean includeLanguageId, String operatingMode, boolean isDecorated) 
 	{
 		String pageUrl = "";
 		
 		try
 		{
-			pageUrl = this.nodeDeliveryController.getPageUrl(getDatabase(), this.getPrincipal(), siteNodeId, this.languageId, includeLanguageId, operatingMode, isDecorated, this.deliveryContext);
+			pageUrl = this.nodeDeliveryController.getPageUrl(getDatabase(), this.getPrincipal(), siteNodeId, languageId, includeLanguageId, operatingMode, isDecorated, this.deliveryContext);
 		}
 		catch(Exception e)
 		{
@@ -8875,14 +8875,5 @@ import com.opensymphony.module.propertyset.PropertySetManager;
 		}
 		return value;
 	}
-
-	@Override
-	public String getPageUrl(Integer siteNodeId, Integer languageId, boolean includeLanguageId, String operatingMode,
-			boolean isDecorated) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-
 
 }
