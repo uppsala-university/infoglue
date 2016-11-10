@@ -87,8 +87,9 @@ public class PageUrlTag extends ComponentLogicTag
 	private String getPageUrl() throws JspTagException
 	{
 		DeliveryContext dc = getController().getDeliveryContext();
-	    if(this.languageId == null)
+	    if(this.languageId == null) {
 	        this.languageId = getController().getLanguageId();
+	    }
 	    String url = "";
 	   
 	    if(this.propertyName != null) {
@@ -103,6 +104,7 @@ public class PageUrlTag extends ComponentLogicTag
 	    if (operatingMode == null && isDecorated == null) {
 	    	url = getController().getPageUrl(siteNodeId, languageId, includeLanguageId, contentId);
 	    } else {
+	    	
 	    	if (operatingMode == null) {
 	    		operatingMode = dc.getOperatingMode();
 	    	}

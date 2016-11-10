@@ -486,15 +486,18 @@ public class BasicURLComposer extends URLComposer
 
 		boolean isDecoratedUrl = request == null ? false : request.getRequestURI().indexOf("!renderDecoratedPage") > -1;
 		
-		boolean useDecorated = isDecoratedUrl && isDecorated; 
-		
+		if (isDecorated) {
+			isDecoratedUrl = true;
+		}
+			
 		logger.debug("URL is decorated: " + isDecoratedUrl);
 		logger.debug("isDecorated was: " + isDecorated);
 
 		/* Determine to create a nice uri or not 
 		 * */
-		boolean createNiceURI = enableNiceURI && !deliveryContext.getDisableNiceUri() && !useDecorated;
 		
+		boolean createNiceURI = enableNiceURI && !deliveryContext.getDisableNiceUri() && !isDecoratedUrl;
+
 		if (createNiceURI)
 		{
 			
@@ -502,6 +505,7 @@ public class BasicURLComposer extends URLComposer
 			
 		}
         else
+        	
         {
         	url = getDecoratedUrl(url, siteNodeId, languageId, contentId, isDecorated, operatingMode, isDecoratedUrl, context, db);
         	if(request != null && request.getScheme().equalsIgnoreCase("https"))
@@ -1026,6 +1030,7 @@ public class BasicURLComposer extends URLComposer
 		try
 		{
 			SiteNodeVO siteNodeVO = SiteNodeController.getController().getSiteNodeVOWithId(siteNodeId, db);
+			
 			if(siteNodeVO == null)
 			{
 				logger.warn("composePageUrl was called with siteNodeId which does not exist:" + siteNodeId + " from the page with key: " + deliveryContext.getPageKey());
@@ -1082,10 +1087,12 @@ public class BasicURLComposer extends URLComposer
 		}
 
 		boolean isDecoratedUrl = request == null ? false : request.getRequestURI().indexOf("!renderDecoratedPage") > -1;
+		
 		logger.debug("URL is decorated: " + isDecoratedUrl);
 		if (enableNiceURI.equalsIgnoreCase("true") && !isDecoratedUrl && !deliveryContext.getDisableNiceUri())
 		{
 			SiteNodeVO siteNode = SiteNodeController.getController().getSmallSiteNodeVOWithId(siteNodeId, db);
+			
 			if(siteNode == null)
 			{
 				logger.warn("composePageUrl was called with siteNodeId which does not exist:" + siteNodeId + " from the page with key: " + deliveryContext.getPageKey());
