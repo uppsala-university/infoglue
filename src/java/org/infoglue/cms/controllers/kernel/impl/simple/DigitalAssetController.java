@@ -2385,18 +2385,23 @@ public class DigitalAssetController extends BaseController
 	
 	/**
 	 * This method checks if the given file exists on disk. If it does it's ignored because
-	 * that means that the file is allready cached on the server. If not we take out the stream from the 
+	 * that means that the file is already cached on the server. If not we take out the stream from the 
 	 * digitalAsset-object and dumps it.
 	 */
 	public static boolean dumpDigitalAsset(DigitalAssetVO digitalAssetVO, String fileName, String filePath, boolean forceDump, Database db) throws Exception
 	{
 		logger.info("fileName:" + fileName);
+
 		File outputFile = new File(filePath + File.separator + fileName);
 		File tmpOutputFile = new File(filePath + File.separator + "tmp_" + Thread.currentThread().getId() + "_" + fileName);
+		System.out.println("outputFile:" + outputFile);
+		System.out.println("tmpOutputFile:" + tmpOutputFile);
+		System.out.println("forceDump:" + forceDump);
+		System.out.println("outputFile.exists():" + outputFile.exists());
 		if(!forceDump && outputFile.exists())
 		{
 			if(logger.isInfoEnabled())
-				logger.info("The file allready exists so we don't need to dump it again..");
+				logger.info("The file already exists so we don't need to dump it again..");
 
 			return true;
 		}
@@ -2470,7 +2475,7 @@ public class DigitalAssetController extends BaseController
 					logger.info("tmpOutputFile:" + tmpOutputFile.getAbsolutePath() + ":" + tmpOutputFile.exists());
 					logger.info("outputFile:" + outputFile.getAbsolutePath() + ":" + outputFile.exists());
 				}
-				
+				System.out.println("tmpOutputFile.exists():" + tmpOutputFile.exists());
 				if(tmpOutputFile.exists())
 				{
 					logger.info("\n\nExists" + tmpOutputFile.getAbsolutePath() + "=" + tmpOutputFile.exists() + " OR " + outputFile.exists() + ":" + outputFile.length());
@@ -2513,7 +2518,8 @@ public class DigitalAssetController extends BaseController
 			if(logger.isInfoEnabled())
 				logger.info("Extra information on error dumping asset:" + e.getMessage(), e);				
 		}
-		
+		System.out.println("outputfile 1:" + outputFile.exists());
+
 		return outputFile.exists();
 	}
 	

@@ -212,6 +212,8 @@ public class UpdateDigitalAssetAction extends ViewDigitalAssetAction
 		            	digitalAssetVO.setAssetContentType(contentType);
 						digitalAssetVO.setAssetFileName(fileName);
 						digitalAssetVO.setAssetFilePath(filePath);
+						
+						
 						digitalAssetVO.setAssetFileSize(new Integer(new Long(file.length()).intValue()));
 						is = new FileInputStream(file);    	
 						
@@ -248,6 +250,7 @@ public class UpdateDigitalAssetAction extends ViewDigitalAssetAction
 								    }
 		
 								    Image image = javax.imageio.ImageIO.read(file);
+								   
 								    int width = image.getWidth(null);
 								    int height = image.getHeight(null);
 								    
@@ -309,9 +312,9 @@ public class UpdateDigitalAssetAction extends ViewDigitalAssetAction
     		{
     		    logger.error("File upload failed for some reason.");
     		}
-    		
+    		 System.out.println("digitalAssetVO filename:" + digitalAssetVO.getAssetFileName());
     		updatedDigitalAssetVO = DigitalAssetController.update(digitalAssetVO, is);
-    		
+    		System.out.println("digitalAssetVO filename:" + updatedDigitalAssetVO.getAssetFileName());
 			isUpdated = true;
 
       	} 
