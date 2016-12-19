@@ -27,18 +27,10 @@ import java.util.Map;
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.JspTagException;
 
-import org.exolab.castor.jdo.Database;
-import org.infoglue.deliver.applications.databeans.DeliveryContext;
-import org.infoglue.deliver.controllers.kernel.URLComposer;
-import org.infoglue.deliver.controllers.kernel.impl.simple.BasicURLComposer;
-import org.infoglue.deliver.controllers.kernel.impl.simple.ComponentLogic;
-import org.infoglue.deliver.controllers.kernel.impl.simple.NodeDeliveryController;
-import org.infoglue.deliver.taglib.component.ComponentLogicTag;
-import org.infoglue.cms.exception.SystemException;
-import org.infoglue.cms.security.InfoGluePrincipal;
 import org.infoglue.cms.util.CmsPropertyHandler;
-import org.jfree.util.Log;
-import org.netbeans.lib.cvsclient.commandLine.command.log;
+import org.infoglue.deliver.applications.databeans.DeliveryContext;
+import org.infoglue.deliver.controllers.kernel.impl.simple.ComponentLogic;
+import org.infoglue.deliver.taglib.component.ComponentLogicTag;
 
 public class PageUrlTag extends ComponentLogicTag
 {
@@ -93,15 +85,18 @@ public class PageUrlTag extends ComponentLogicTag
 	        this.languageId = getController().getLanguageId();
 	    String url = "";
 	   
-	    if(this.propertyName != null) {
+	    if(this.propertyName != null)
+	    {
 	    	ComponentLogic componentLogic = getController().getComponentLogic();
 	 		Map property = componentLogic.getInheritedComponentProperty(componentLogic.getInfoGlueComponent(), propertyName, useInheritance, useRepositoryInheritance, useStructureInheritance);
 	 		siteNodeId = componentLogic.getSiteNodeId(property);
-	 		if(siteNodeId == null) {
+	 		if(siteNodeId == null)
+	 		{
 	 			return url;
 	 		}
 	    }
 	    
+
 	    if (operatingMode == null && isDecorated == null) {
 	    	url = getController().getPageUrl(siteNodeId, languageId, includeLanguageId, contentId);
 	    } else {
@@ -116,20 +111,20 @@ public class PageUrlTag extends ComponentLogicTag
 	    	
 	    	String tempOperatingMode = dc.getOperatingMode();
 	    	dc.setOperatingMode(operatingMode);
-	    	try {
+	    	try
+	    	{
 	    		url = getController().getPageUrl(siteNodeId, languageId, includeLanguageId, -1, operatingMode, isDecorated);
-	    	} finally {
+	    	} 
+	    	finally
+	    	{
 		    	/* restoring operatingMode */
 		    	dc.setOperatingMode(tempOperatingMode);	
 	    	}
 	    }
-
-		String protectedProtocolName = CmsPropertyHandler.getProtectedProtocolName();
 		
-	    if ((forceHTTPProtocol == null && CmsPropertyHandler.getForceHTTPProtocol() || forceHTTPProtocol) &&
-	    	url.startsWith(protectedProtocolName))
+	    if ((forceHTTPProtocol == null && CmsPropertyHandler.getForceHTTPProtocol() || forceHTTPProtocol) && url.toLowerCase().startsWith("https"))
 	    {
-	    	url = url.replaceFirst(protectedProtocolName, CmsPropertyHandler.getUnprotectedProtocolName());
+	    	url = url.replaceFirst("https", "http");
 	    }
 
 	    return url;
@@ -139,6 +134,7 @@ public class PageUrlTag extends ComponentLogicTag
     {
         this.siteNodeId = evaluateInteger("pageUrl", "siteNodeId", siteNodeId);
     }
+	
 	public void setForceHTTPProtocol(final String forceHTTPProtocol) throws JspException
     {
         this.forceHTTPProtocol = evaluateBoolean("pageUrl", "forceHTTPProtocol", forceHTTPProtocol);
