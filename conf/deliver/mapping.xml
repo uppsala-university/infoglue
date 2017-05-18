@@ -1705,7 +1705,7 @@
 <!--  Mapping for MediumDigitalAsset  -->
   <class name="org.infoglue.cms.entities.content.impl.simple.MediumDigitalAssetImpl" identity="digitalAssetId" key-generator="IDENTITY">
     <description>MediumDigitalAsset</description>
-    <cache-type type="none"/>
+    <cache-type type="count-limited" capacity="10000"/>
     <map-to table="cmDigitalAsset"/>
     <field name="digitalAssetId" type="java.lang.Integer">
       <sql name="digitalAssetId" type="integer" dirty="check" />
