@@ -236,16 +236,12 @@ public class ContentStateController extends BaseController
 					newContentVersionVO.setVersionComment(versionComment);
 					newContentVersionVO.setModifiedDateTime(DateHelper.getSecondPreciseDate());
 
-					System.out.println("overrideVersionModifyer: " + overrideVersionModifyer);
-					System.out.println("principal in: " + infoGluePrincipal.getName());
-					System.out.println("principal before: " + newContentVersionVO.getVersionModifier());
-					
+
 					if(overrideVersionModifyer)
 					    newContentVersionVO.setVersionModifier(infoGluePrincipal.getName());
 				    else
 				        newContentVersionVO.setVersionModifier(oldContentVersion.getVersionModifier());
 			
-					System.out.println("principal after: " + newContentVersionVO.getVersionModifier());
 					
 					newContentVersionVO.setVersionValue(oldContentVersion.getVersionValue());
 					newContentVersion = ContentVersionController.getContentVersionController().createMedium(oldContentVersion, contentId, oldContentVersion.getValueObject().getLanguageId(), newContentVersionVO, oldContentVersion.getContentVersionId(), (oldContentVersion.getDigitalAssets().size() > 0), false, duplicateAssets, excludedAssetId, db);
@@ -312,7 +308,10 @@ public class ContentStateController extends BaseController
 				//End new logic 
 
 				newContentVersion = oldContentVersion;
-
+		
+				if(overrideVersionModifyer)
+				    newContentVersion.setVersionModifier(infoGluePrincipal.getName());
+		
 				//Creating the event that will notify the editor...
 				if(oldContentVersionStateId.intValue() == ContentVersionVO.WORKING_STATE.intValue())
 				{
