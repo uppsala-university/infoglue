@@ -125,6 +125,7 @@ public class AssetUpdatingThread extends Thread
 						Object[] idsExtra = {new Integer(digitalAssetVO.getDigitalAssetId())};
 						CacheController.clearCache(typesExtra, idsExtra);
 
+						
 						Class typesExtraMedium = DigitalAssetImpl.class;
 						Object[] idsExtraMedium = {new Integer(digitalAssetVO.getDigitalAssetId())};
 						CacheController.clearCache(typesExtraMedium, idsExtraMedium);
