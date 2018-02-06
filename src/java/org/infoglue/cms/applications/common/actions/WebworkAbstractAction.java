@@ -377,9 +377,8 @@ public abstract class WebworkAbstractAction implements Action, ServletRequestAwa
 				localizedErrorMessage = errorCode;
 			else
 				localizedErrorMessage = getLocalizedErrorMessage(locale, errorCode);
-			//System.out.println("localizedErrorMessage:" + localizedErrorMessage);
 
-			//final String localizedErrorMessage = getLocalizedErrorMessage(locale, errorCode);
+
 			getErrors().addError(fieldName, localizedErrorMessage + (extraInformation.length() > 0 ? " " + extraInformation + " " : ""));
 
 			getLinkBeans().addAll(ce.getLinkBeans());
@@ -673,7 +672,6 @@ public abstract class WebworkAbstractAction implements Action, ServletRequestAwa
 		{
 			
 				// Default values
-			
 				String method = "";
 				String context = "unknown context";
 				
@@ -704,26 +702,8 @@ public abstract class WebworkAbstractAction implements Action, ServletRequestAwa
 					}
 				}
 				
-				final String tid = getGeneralSetting(GA_CMS_ID, null);
-				final String gaUrl = getGeneralSetting(GA_CMS_URL, null);
-				final String actionFinal = action;
-				boolean isExcludedAction = false;
-			
-				String excludedActions = getGeneralSetting(GA_EXLUDED_ACTIONS, null);
-				if (excludedActions != null) {	
-					isExcludedAction = excludedActions.matches(".*(^|,)" + action + "(,|$).*");
-				}
-			
-				if (!isExcludedAction && action != null && tid != null && !tid.equalsIgnoreCase("") && gaUrl != null && !gaUrl.equalsIgnoreCase("")) {
-				
-					Thread thread = new Thread(new Runnable() {
-						public void run() {
-							sendToGA(actionFinal, userName, tid, gaUrl);
-						}
-					});
-					thread.start(); 
-				}
-			
+				logUserActionToGa (action, userName);
+
 				logger.debug("action: " + action + ", method: " + method + ", context: " + context + ", userName: " + userName + ", parameters: " + parameters);
 
 				// Some actions are called too often, exclude them.
@@ -739,6 +719,29 @@ public abstract class WebworkAbstractAction implements Action, ServletRequestAwa
 		}
 	}
 	
+	// Log user actions
+	private void logUserActionToGa (final String action, final String userName) {
+		final String tid = getGeneralSetting(GA_CMS_ID, null);
+		final String gaUrl = getGeneralSetting(GA_CMS_URL, null);
+
+		String excludedActions = getGeneralSetting(GA_EXLUDED_ACTIONS, "");
+		
+		// Check for matching actions with our black list since we do not want to get spammed with irrelevant actions 
+		if (!excludedActions.matches(".*(^|,)" + action + "(,|$).*") && tid != null && !tid.equalsIgnoreCase("") && gaUrl != null && !gaUrl.equalsIgnoreCase("")) {
+			
+			Thread thread = new Thread(new Runnable() {
+				public void run() {
+					
+					sendToGA(action, userName, tid, gaUrl);
+				}
+			});
+			logger.debug("Starting send to GA thread with params:" + action + ", " + userName + ", " + tid + ", " + gaUrl);
+			thread.start(); 
+			
+		}
+		
+	}
+	// Getting a setting from application settings within the CMS
 	private static String getGeneralSetting(String key, String defaultValue) {
 		Properties generalSettings = CmsPropertyHandler.getGeneralSettings(false);
 		if (generalSettings != null) {
@@ -748,6 +751,7 @@ public abstract class WebworkAbstractAction implements Action, ServletRequestAwa
 		}
 	}
 	
+	// Push user action data to Google Analytics 
 	public void sendToGA(String action, String userName, String tid, String gaUrl) {
 
 		String principalRole = "unknown";
@@ -762,7 +766,7 @@ public abstract class WebworkAbstractAction implements Action, ServletRequestAwa
 		}
 	
 		HttpSession session = request.getSession();
-		
+		/* Since we require to make a anonymous id of the user a random number for that session is created */
 		if (session != null && (session.getAttribute("GASession") == null || session.getAttribute("GASession").toString().equalsIgnoreCase(""))) {
 			Double random = Math.random();
 			session.setAttribute("GASession", random.toString());
@@ -771,11 +775,11 @@ public abstract class WebworkAbstractAction implements Action, ServletRequestAwa
 		// Send analytics data with post to google analytics measurement protocol
 		String urlParameters  = "";
 		urlParameters = "v=1&tid=" + tid + "&cid=" + session.getAttribute("GASession") + "&t=event&ec=" + principalRole + "&ea=" + action;
-		
-		byte[] postData       = urlParameters.getBytes( StandardCharsets.UTF_8 );
-		String request        = gaUrl;
-		
+
+		byte[] postData = urlParameters.getBytes(StandardCharsets.UTF_8);
+		String request = gaUrl;
 		URL url;
+		
 		try {
 			url = new URL( request );
 
@@ -788,10 +792,10 @@ public abstract class WebworkAbstractAction implements Action, ServletRequestAwa
 			try( DataOutputStream wr = new DataOutputStream( conn.getOutputStream())) {
 			   wr.write( postData );
 			}
-			System.out.println("5:" + conn.getResponseCode());
+	
 			} catch (IOException e) {
 		
-			logger.warn("Could not send analytics data for action:" + action + " and data:" + postData);
+			logger.warn("Could send analytics data for action:" + action + " and data:" + postData);
 		}
 		
 	}
