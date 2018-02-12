@@ -167,8 +167,6 @@ public abstract class WebworkAbstractAction implements Action, ServletRequestAwa
 	{
 		logUserAction(Level.INFO);
 		
-		Timer t = new Timer();
-
 		String result = "";
 
 		ThreadMonitor tm = new ThreadMonitor(10000L, request, "Action took to long", false);
@@ -188,12 +186,6 @@ public abstract class WebworkAbstractAction implements Action, ServletRequestAwa
 			result = isCommand() ? invokeCommand() : doExecute();
 			setStandardResponseHeaders();
 
-			long elapsedTime = t.getElapsedTime();
-			long memoryDiff = t.getMemoryDifferenceAsMegaBytes();
-			if(elapsedTime > 5000 || memoryDiff > 100)
-			{
-				logger.warn("The " + CmsPropertyHandler.getApplicationName() + " request: " + this.getUnencodedCurrentURIWithParameters() + " took " + elapsedTime + " ms to render and seems to have allocated " + memoryDiff + " MB of memory)");
-			}
 		} 
 		catch(ResultException e) 
 		{
@@ -448,7 +440,8 @@ public abstract class WebworkAbstractAction implements Action, ServletRequestAwa
 
 		try 
 		{
-			protectFromCSSAttacks(this.getClass().getName(), this.commandName);
+			// TODO rename and reactivate following method
+			//protectFromCSSAttacks(this.getClass().getName(), this.commandName);
 
 			final Method method = getClass().getMethod(methodName.toString(), new Class[0]);
 			result = (String) method.invoke(this, new Object[0]);
