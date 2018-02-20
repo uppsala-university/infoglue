@@ -716,12 +716,12 @@ public abstract class WebworkAbstractAction implements Action, ServletRequestAwa
 	private void logUserActionToGa (final String action, final String userName) {
 		final String tid = getGeneralSetting(GA_CMS_ID, null);
 		final String gaUrl = getGeneralSetting(GA_CMS_URL, null);
-
-		String excludedActions = getGeneralSetting(GA_EXLUDED_ACTIONS, "");
 		
+		String excludedActions = getGeneralSetting(GA_EXLUDED_ACTIONS, "");
+		System.out.println(tid + "," + gaUrl +"," + excludedActions);
 		// Check for matching actions with our black list since we do not want to get spammed with irrelevant actions 
 		if (!excludedActions.matches(".*(^|,)" + action + "(,|$).*") && tid != null && !tid.equalsIgnoreCase("") && gaUrl != null && !gaUrl.equalsIgnoreCase("")) {
-			
+			System.out.println("indide");
 			Thread thread = new Thread(new Runnable() {
 				public void run() {
 					
@@ -746,7 +746,7 @@ public abstract class WebworkAbstractAction implements Action, ServletRequestAwa
 	
 	// Push user action data to Google Analytics 
 	public void sendToGA(String action, String userName, String tid, String gaUrl) {
-
+		System.out.println("didide");
 		String principalRole = "unknown";
 		TemplateController controller = (TemplateController) request.getAttribute("org.infoglue.cms.deliver.templateLogic");
 		if (controller != null) {
@@ -757,40 +757,44 @@ public abstract class WebworkAbstractAction implements Action, ServletRequestAwa
 				principalRole = principal.getRoles().get(0).getName();
 			}
 		}
-	
+		
+		String urlParameters  = "";
 		HttpSession session = request.getSession();
 		/* Since we require to make a anonymous id of the user a random number for that session is created */
-		if (session != null && (session.getAttribute("GASession") == null || session.getAttribute("GASession").toString().equalsIgnoreCase(""))) {
+		if (session != null && (session.getAttribute("GASession") == null || session != null && session.getAttribute("GASession").toString().equalsIgnoreCase(""))) {
 			Double random = Math.random();
+			System.out.println("sessionInside");
 			session.setAttribute("GASession", random.toString());
+			
 		} 
-		
-		// Send analytics data with post to google analytics measurement protocol
-		String urlParameters  = "";
-		urlParameters = "v=1&tid=" + tid + "&cid=" + session.getAttribute("GASession") + "&t=event&ec=" + principalRole + "&ea=" + action;
 
-		byte[] postData = urlParameters.getBytes(StandardCharsets.UTF_8);
-		String request = gaUrl;
-		URL url;
-		
-		try {
-			url = new URL( request );
+		if (session != null) {
+			urlParameters = "v=1&tid=" + tid + "&cid=" + session.getAttribute("GASession") + "&t=event&ec=" + principalRole + "&ea=" + action;
+			// Send analytics data with post to google analytics measurement protocol
+			
+			byte[] postData = urlParameters.getBytes(StandardCharsets.UTF_8);
+			String request = gaUrl;
+			URL url;
+			System.out.println(urlParameters + ":::::::::::" + gaUrl);
+			try {
+				url = new URL( request );
+				
+				HttpURLConnection conn= (HttpURLConnection) url.openConnection();
+				
+				conn.setRequestMethod("POST");
+				conn.setRequestProperty("Content-Length", "" +  Integer.toString(urlParameters.getBytes().length));
+				conn.setDoOutput(true);
+				conn.setUseCaches( false );
 
-			HttpURLConnection conn= (HttpURLConnection) url.openConnection();
+				try( DataOutputStream wr = new DataOutputStream( conn.getOutputStream())) {
+				   wr.write( postData );
+				}
+		
+				} catch (IOException e) {
 			
-			conn.setRequestMethod("POST");
-			conn.setDoOutput(true);
-			conn.setUseCaches( false );
-			
-			try( DataOutputStream wr = new DataOutputStream( conn.getOutputStream())) {
-			   wr.write( postData );
+				logger.warn("Could send analytics data for action:" + action + " and data:" + postData);
 			}
-	
-			} catch (IOException e) {
-		
-			logger.warn("Could send analytics data for action:" + action + " and data:" + postData);
 		}
-		
 	}
 
 	static public String join(String delimiter, List<String> list)
