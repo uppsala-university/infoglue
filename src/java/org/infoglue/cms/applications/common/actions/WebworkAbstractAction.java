@@ -23,8 +23,10 @@
 
 package org.infoglue.cms.applications.common.actions;
 
+import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.StringReader;
 import java.lang.reflect.Method;
 import java.net.HttpURLConnection;
@@ -49,6 +51,7 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.net.ssl.HttpsURLConnection;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -103,6 +106,7 @@ public abstract class WebworkAbstractAction implements Action, ServletRequestAwa
 	private static final String GA_CMS_ID ="ga.cms.id";
 	private static final String GA_CMS_URL ="ga.cms.url";
 	private static final String GA_EXLUDED_ACTIONS ="ga.cms.excluded.actions";
+	private final String USER_AGENT = "Mozilla/5.0";
 	
 	private final static Logger logger = Logger.getLogger(WebworkAbstractAction.class.getName());
 	private final static Logger USER_ACTION_LOGGER = Logger.getLogger("User Action");
@@ -718,17 +722,21 @@ public abstract class WebworkAbstractAction implements Action, ServletRequestAwa
 		final String gaUrl = getGeneralSetting(GA_CMS_URL, null);
 		
 		String excludedActions = getGeneralSetting(GA_EXLUDED_ACTIONS, "");
-		System.out.println(tid + "," + gaUrl +"," + excludedActions);
+		
 		// Check for matching actions with our black list since we do not want to get spammed with irrelevant actions 
 		if (!excludedActions.matches(".*(^|,)" + action + "(,|$).*") && tid != null && !tid.equalsIgnoreCase("") && gaUrl != null && !gaUrl.equalsIgnoreCase("")) {
-			System.out.println("indide");
+			
 			Thread thread = new Thread(new Runnable() {
 				public void run() {
 					
-					sendToGA(action, userName, tid, gaUrl);
+					try {
+						sendToGA(action, userName, tid, gaUrl);
+					} catch (IOException e) {
+						logger.warn("Could not send GA information:" + action + ", " + userName + ", " + tid + ", " + gaUrl);
+					}
 				}
 			});
-			logger.debug("Starting send to GA thread with params:" + action + ", " + userName + ", " + tid + ", " + gaUrl);
+			
 			thread.start(); 
 			
 		}
@@ -745,8 +753,8 @@ public abstract class WebworkAbstractAction implements Action, ServletRequestAwa
 	}
 	
 	// Push user action data to Google Analytics 
-	public void sendToGA(String action, String userName, String tid, String gaUrl) {
-		System.out.println("didide");
+	public void sendToGA(String action, String userName, String tid, String gaUrl) throws IOException {
+
 		String principalRole = "unknown";
 		TemplateController controller = (TemplateController) request.getAttribute("org.infoglue.cms.deliver.templateLogic");
 		if (controller != null) {
@@ -763,7 +771,7 @@ public abstract class WebworkAbstractAction implements Action, ServletRequestAwa
 		/* Since we require to make a anonymous id of the user a random number for that session is created */
 		if (session != null && (session.getAttribute("GASession") == null || session != null && session.getAttribute("GASession").toString().equalsIgnoreCase(""))) {
 			Double random = Math.random();
-			System.out.println("sessionInside");
+			
 			session.setAttribute("GASession", random.toString());
 			
 		} 
@@ -772,29 +780,32 @@ public abstract class WebworkAbstractAction implements Action, ServletRequestAwa
 			urlParameters = "v=1&tid=" + tid + "&cid=" + session.getAttribute("GASession") + "&t=event&ec=" + principalRole + "&ea=" + action;
 			// Send analytics data with post to google analytics measurement protocol
 			
-			byte[] postData = urlParameters.getBytes(StandardCharsets.UTF_8);
-			String request = gaUrl;
-			URL url;
-			System.out.println(urlParameters + ":::::::::::" + gaUrl);
-			try {
-				url = new URL( request );
-				
-				HttpURLConnection conn= (HttpURLConnection) url.openConnection();
-				
-				conn.setRequestMethod("POST");
-				conn.setRequestProperty("Content-Length", "" +  Integer.toString(urlParameters.getBytes().length));
-				conn.setDoOutput(true);
-				conn.setUseCaches( false );
+			String url = "https://www.google-analytics.com/collect";
+			URL obj = new URL(url);
+			HttpsURLConnection con = (HttpsURLConnection) obj.openConnection();
 
-				try( DataOutputStream wr = new DataOutputStream( conn.getOutputStream())) {
-				   wr.write( postData );
-				}
-		
-				} catch (IOException e) {
-			
-				logger.warn("Could send analytics data for action:" + action + " and data:" + postData);
+			//add request header
+			con.setRequestMethod("POST");
+			con.setRequestProperty("User-Agent", USER_AGENT);
+			con.setRequestProperty("Accept-Language", "en-US,en;q=0.5");
+
+			// Send post request
+			con.setDoOutput(true);
+			DataOutputStream wr = new DataOutputStream(con.getOutputStream());
+			wr.writeBytes(urlParameters);
+			wr.flush();
+			wr.close();
+
+			BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
+			String inputLine;
+			StringBuffer response = new StringBuffer();
+
+			while ((inputLine = in.readLine()) != null) {
+				response.append(inputLine);
 			}
+			in.close();
 		}
+
 	}
 
 	static public String join(String delimiter, List<String> list)
