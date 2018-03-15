@@ -667,48 +667,48 @@ public abstract class WebworkAbstractAction implements Action, ServletRequestAwa
 		String action = "unknown action";
 		try
 		{
+
+			// Default values
+			String method = "";
+			String context = "unknown context";
 			
-				// Default values
-				String method = "";
-				String context = "unknown context";
-				
-				final String userName = getOptionalUserName();
-				String url = request.getRequestURL().toString();
-				String parameters = getParametersString();
-				
-				if (url != null)
-				{				
-					Matcher matcher = USER_ACTION_PATTERN.matcher(url);
-					if (matcher.find())
+			final String userName = getOptionalUserName();
+			String url = request.getRequestURL().toString();
+			String parameters = getParametersString();
+			
+			if (url != null)
+			{				
+				Matcher matcher = USER_ACTION_PATTERN.matcher(url);
+				if (matcher.find())
+				{
+					String contextMatch = matcher.group(CONTEXT_GROUP_INDEX);
+					if (contextMatch != null)
 					{
-						String contextMatch = matcher.group(CONTEXT_GROUP_INDEX);
-						if (contextMatch != null)
-						{
-							context = contextMatch;
-						}
-						String actionMatch = matcher.group(ACTION_GROUP_INDEX);
-						if (actionMatch != null)
-						{
-							action = actionMatch;
-						}
-						String methodMatch = matcher.group(METHOD_GROUP_INDEX);
-						if (methodMatch != null)
-						{
-							method = methodMatch;
-						}
+						context = contextMatch;
+					}
+					String actionMatch = matcher.group(ACTION_GROUP_INDEX);
+					if (actionMatch != null)
+					{
+						action = actionMatch;
+					}
+					String methodMatch = matcher.group(METHOD_GROUP_INDEX);
+					if (methodMatch != null)
+					{
+						method = methodMatch;
 					}
 				}
-				
-				logUserActionToGa (action, userName);
+			}
+			
+			logUserActionToGa (action, userName);
 
-				logger.debug("action: " + action + ", method: " + method + ", context: " + context + ", userName: " + userName + ", parameters: " + parameters);
+			logger.debug("action: " + action + ", method: " + method + ", context: " + context + ", userName: " + userName + ", parameters: " + parameters);
 
-				// Some actions are called too often, exclude them.
-				if (!action.equals(UPDATE_CACHE_ACTION) && !action.equals(VIEW_MESSAGE_CENTER_ACTION))
-				{
-					// For all other actions, log to the USER_ACTION_LOGGER
-					USER_ACTION_LOGGER.log(level, String.format(USER_ACTION_FORMAT, userName, context, action, method, parameters));
-				}
+			// Some actions are called too often, exclude them.
+			if (!action.equals(UPDATE_CACHE_ACTION) && !action.equals(VIEW_MESSAGE_CENTER_ACTION))
+			{
+				// For all other actions, log to the USER_ACTION_LOGGER
+				USER_ACTION_LOGGER.log(level, String.format(USER_ACTION_FORMAT, userName, context, action, method, parameters));
+			}
 			
 		} catch (Throwable t)
 		{
@@ -722,10 +722,10 @@ public abstract class WebworkAbstractAction implements Action, ServletRequestAwa
 		final String gaUrl = getGeneralSetting(GA_CMS_URL, null);
 		
 		String excludedActions = getGeneralSetting(GA_EXLUDED_ACTIONS, "");
-		
+
 		// Check for matching actions with our black list since we do not want to get spammed with irrelevant actions 
 		if (!excludedActions.matches(".*(^|,)" + action + "(,|$).*") && tid != null && !tid.equalsIgnoreCase("") && gaUrl != null && !gaUrl.equalsIgnoreCase("")) {
-			
+	
 			Thread thread = new Thread(new Runnable() {
 				public void run() {
 					
@@ -775,12 +775,12 @@ public abstract class WebworkAbstractAction implements Action, ServletRequestAwa
 			session.setAttribute("GASession", random.toString());
 			
 		} 
-
+		logger.debug("Sending GA event for session:" + session.getAttribute("GASession"));
 		if (session != null) {
 			urlParameters = "v=1&tid=" + tid + "&cid=" + session.getAttribute("GASession") + "&t=event&ec=" + principalRole + "&ea=" + action;
 			// Send analytics data with post to google analytics measurement protocol
 			
-			String url = "https://www.google-analytics.com/collect";
+			String url = GA_CMS_URL;
 			URL obj = new URL(url);
 			HttpsURLConnection con = (HttpsURLConnection) obj.openConnection();
 
@@ -788,7 +788,7 @@ public abstract class WebworkAbstractAction implements Action, ServletRequestAwa
 			con.setRequestMethod("POST");
 			con.setRequestProperty("User-Agent", USER_AGENT);
 			con.setRequestProperty("Accept-Language", "en-US,en;q=0.5");
-
+			logger.debug("Url parameters:" + urlParameters);
 			// Send post request
 			con.setDoOutput(true);
 			DataOutputStream wr = new DataOutputStream(con.getOutputStream());
