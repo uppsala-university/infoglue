@@ -779,7 +779,7 @@ public abstract class WebworkAbstractAction implements Action, ServletRequestAwa
 		if (session != null) {
 			urlParameters = "v=1&tid=" + tid + "&cid=" + session.getAttribute("GASession") + "&t=event&ec=" + principalRole + "&ea=" + action;
 			// Send analytics data with post to google analytics measurement protocol
-			
+			logger.debug("Url parameters:" + urlParameters);
 			String url = GA_CMS_URL;
 			URL obj = new URL(url);
 			HttpsURLConnection con = (HttpsURLConnection) obj.openConnection();
@@ -788,7 +788,7 @@ public abstract class WebworkAbstractAction implements Action, ServletRequestAwa
 			con.setRequestMethod("POST");
 			con.setRequestProperty("User-Agent", USER_AGENT);
 			con.setRequestProperty("Accept-Language", "en-US,en;q=0.5");
-			logger.debug("Url parameters:" + urlParameters);
+			
 			// Send post request
 			con.setDoOutput(true);
 			DataOutputStream wr = new DataOutputStream(con.getOutputStream());
