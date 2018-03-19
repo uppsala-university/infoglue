@@ -775,8 +775,9 @@ public abstract class WebworkAbstractAction implements Action, ServletRequestAwa
 			session.setAttribute("GASession", random.toString());
 			
 		} 
-		logger.debug("Sending GA event for session:" + session.getAttribute("GASession"));
+		
 		if (session != null) {
+			logger.debug("Sending GA event for session:" + session.getAttribute("GASession"));
 			urlParameters = "v=1&tid=" + tid + "&cid=" + session.getAttribute("GASession") + "&t=event&ec=" + principalRole + "&ea=" + action;
 			// Send analytics data with post to google analytics measurement protocol
 			logger.debug("Url parameters:" + urlParameters);
