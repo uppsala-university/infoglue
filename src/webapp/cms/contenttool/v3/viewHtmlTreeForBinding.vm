@@ -19,12 +19,12 @@
 		var languageCode = "$languageCode";
 		
 		var oldSelected;
-		function htmlTreeItemClick(itemId, repoId, path)
+		function htmlTreeItemClick(itemId, repoId, path, isFolder)
 		{
-			setSelected(itemId, repoId, path);			
+			setSelected(itemId, repoId, path, isFolder);
 		}
 		
-		function setSelected(itemId, repoId, path)
+		function setSelected(itemId, repoId, path, isFolder)
 		{
 			if(itemId)
 				parent.document.inputForm.entityId.value     = itemId;
@@ -32,6 +32,8 @@
 				parent.document.inputForm.repositoryId.value = repoId;
 			if(path)
 			 	parent.document.inputForm.path.value         = path;
+			 	
+			 parent.document.inputForm.isFolder.value         = isFolder;
 			 	
 			if(parent.contentTreeItemClick)
 				parent.contentTreeItemClick(itemId, repoId, path);
@@ -169,20 +171,21 @@
 		#set($par = "&parent=$rootNode.Id")
 	#end 
 	
-	var tree = new WebFXLoadTree("$rootNode.Title", "SimpleContentXml.action?showLeafs=${showLeafs}&action=SimpleContentXml.action&createAction=true&repositoryId=$!{repositoryId}$par&$allowedContentTypeIdsAsUrlEncodedString", "javascript:htmlTreeItemClick('$rootNode.Id','${repositoryId}','$formatter.escapeExtendedHTML($rootNode.Title)');");
+	var tree = new WebFXLoadTree("$rootNode.Title", "SimpleContentXml.action?showLeafs=${showLeafs}&action=SimpleContentXml.action&createAction=true&repositoryId=$!{repositoryId}$par&$allowedContentTypeIdsAsUrlEncodedString", "javascript:htmlTreeItemClick('$rootNode.Id','${repositoryId}','$formatter.escapeExtendedHTML($rootNode.Title)','yes');");
 	tree.myId = "$rootNode.Id";	
 	document.write(tree);
 	
 	var oldSelected = null;
 	function onTreeItemClick(elem, itemId, repoId, path)
-	{
-		htmlTreeItemClick(itemId, repoId, path);
-		
+	{	
 		elementString = elem.toString();
 		startIndex = elementString.indexOf("(") + 1;
 		endIndex = elementString.indexOf(")");
 		nodeId = elementString.substring(startIndex, endIndex);
 		var node = tree.getNodeWithMyId(nodeId);
+		var isFolder = node.folder ? 'yes' : 'no';
+		
+		htmlTreeItemClick(itemId, repoId, path, isFolder);
 		
 		setTimeout(function () {
 			if (node.folder) {

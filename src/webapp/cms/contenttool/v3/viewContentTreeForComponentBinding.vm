@@ -79,10 +79,15 @@
 		{
 			//alert("Here we commit the binding and close the window...");
 			entityId = document.inputForm.entityId.value;
+			isFolder = document.inputForm.isFolder.value;
 			
 			if(entityId == '' || entityId == '${select}' || entityId == '-1')
 			{
 				alert("You must choose a content before you can save");
+			}
+			else if(isFolder == 'yes')
+			{
+				alert("You cannot bind a folder ");
 			}
 			else
 			{
@@ -174,6 +179,7 @@
 		<input type="hidden" name="repositoryId" value=""/>
 		<input type="hidden" name="path" value=""/>
 		<input type="hidden" name="qualifyerXML" value=""/>
+		<input type="hidden" name="isFolder" value=""/>
 	</form>
 
 #endLightCommonToolV3()
