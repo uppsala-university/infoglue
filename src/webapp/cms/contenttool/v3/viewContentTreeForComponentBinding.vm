@@ -97,12 +97,9 @@
 			{
 				alert("You must choose a content before you can save");
 			}
-			else if(isFolder == 'yes')
+			else if(isFolder == 'yes' && folderPermission == 'forbidden')
 			{
-				if(folderPermission == 'forbidden')
-				{
-					alert("You cannot bind a folder");
-				}
+				alert("You cannot bind a folder");
 			}
 			else if(folderPermission == 'exclusive')
 			{
