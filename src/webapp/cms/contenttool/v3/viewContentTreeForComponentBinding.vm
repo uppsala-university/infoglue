@@ -101,7 +101,7 @@
 			{
 				alert("You cannot bind a folder");
 			}
-			else if(!iFolder && folderPermission == 'exclusive')
+			else if(!isFolder && folderPermission == 'exclusive')
 			{
 				alert("You can only bind a folder");
 			}
