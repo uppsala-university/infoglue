@@ -79,7 +79,6 @@
 		{
 			#set($folderPermission = "forbidden")
 			#foreach($contentType in $allowedContentTypeIds)
-				console.log('type: $contentType');
 				#if($contentType==8)
 					#if($allowedContentTypeIds.size() > 1)
 						#set($folderPermission = "allowed")
@@ -88,7 +87,8 @@
 					#end
 				#end
 			#end
-			console.log('permission set to $folderPermission');
+			var folderPermission = '$folderPermission';
+			console.log('permission set to ' + folderPermission);
 			//alert("Here we commit the binding and close the window...");
 			entityId = document.inputForm.entityId.value;
 			isFolder = document.inputForm.isFolder.value;
