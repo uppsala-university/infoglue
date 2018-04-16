@@ -77,6 +77,18 @@
 
 	    function submitBindning()
 		{
+			#set($folderPermission = "forbidden")
+			#foreach($contentType in $allowedContentTypeIds)
+				#if($contentType==8)
+					#if($allowedContentTypeIds.size() > 1)
+						#set($folderPermission = "allowed")
+					#else
+						#set($folderPermission = "exclusive")
+					#end
+				#end
+			#end
+			var folderPermission = '$folderPermission';
+			console.log('permission set to ' + folderPermission);
 			//alert("Here we commit the binding and close the window...");
 			entityId = document.inputForm.entityId.value;
 			isFolder = document.inputForm.isFolder.value;
@@ -85,9 +97,13 @@
 			{
 				alert("You must choose a content before you can save");
 			}
-			else if(isFolder == 'yes')
+			else if(isFolder == 'yes' && folderPermission == 'forbidden')
 			{
-				alert("You cannot bind a folder ");
+				alert("You cannot bind a folder");
+			}
+			else if(!isFolder && folderPermission == 'exclusive')
+			{
+				alert("You can only bind a folder");
 			}
 			else
 			{
