@@ -8488,7 +8488,7 @@ public class BasicTemplateController implements TemplateController
 		if(request.getRequestURL().indexOf("!renderDecoratedPage") > -1)
 		    allowEditOnSightAtAll = true;
 		
-		if(!isEditOnSightDisabled && operatingMode != null && (operatingMode.equals("0") || operatingMode.equals("1") || operatingMode.equals("2")) && editOnSite != null && editOnSite.equalsIgnoreCase("true"))
+		if(allowEditOnSightAtAll && (!isEditOnSightDisabled && operatingMode != null && (operatingMode.equals("0") || operatingMode.equals("1") || operatingMode.equals("2")) && editOnSite != null && editOnSite.equalsIgnoreCase("true")))
 		{
 			templateController = new EditOnSiteBasicTemplateController(this.databaseWrapper, infoGluePrincipal);
 			templateController.setStandardRequestParameters(siteNodeId, languageId, contentId);	

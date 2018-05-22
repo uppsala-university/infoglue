@@ -28,6 +28,8 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.log4j.Logger;
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.controllers.kernel.impl.simple.DigitalAssetController;
+import org.infoglue.cms.exception.SystemException;
+import org.infoglue.cms.util.CmsPropertyHandler;
 
 /**
 * This action downloads an asset from the system.
@@ -49,23 +51,45 @@ public class DownloadAssetAction extends InfoGlueAbstractAction
 	protected String doExecute() throws Exception 
 	{
 		String assetUrl = null;
-		if (contentId != null && assetKey != null && languageId != null) {
+		
+		if (contentId != null && assetKey != null && languageId != null)
+		{
 			try
 			{
-				assetUrl = DigitalAssetController.getDigitalAssetUrl(contentId, languageId, assetKey, true);
+				// Only create url to asset if it belongs to the latest active content version, otherwise it would be possible to access unpublished assets.
+				if (isAssetAvailableInCurrentMode(contentId, languageId, assetKey))
+				{
+					Integer stateId = getCurrentOperatingMode();
+					logger.debug("stateId is " + stateId);
+					assetUrl = DigitalAssetController.getDigitalAssetUrlInState(contentId, languageId, assetKey, true, stateId);
+				}
+				else
+				{
+					logger.info("Asset not available in the latest active content version. AssetId: " + assetId + ", contentId:" + contentId + " (" + languageId + "/" + assetKey + ")");
+				}
 			}
 			catch(Exception e)
 			{
-				logger.warn("Could not download asset on contentId:" + contentId + " (" + languageId + "/" + assetKey + ")");
+				logger.info("Could not download asset on contentId:" + contentId + " (" + languageId + "/" + assetKey + ")", e);
 			}
-		} else if (assetId != null) {
+		}
+		else if (assetId != null)
+		{
 			try 
 			{
-				assetUrl = DigitalAssetController.getDigitalAssetUrl(assetId, false);
+				// Only create url to asset if it belongs to the latest active content version, otherwise it would be possible to access unpublished assets.
+				if (isAssetAvailableInCurrentMode(assetId))
+				{
+					assetUrl = DigitalAssetController.getDigitalAssetUrl(assetId, false);
+				}
+				else
+				{
+					logger.info("Asset not available in the latest active content version. AssetId: " + assetId);
+				}
 			}
 			catch(Exception e)
 			{
-				logger.warn("Could not download asset on assetId:" + assetId);
+				logger.info("Could not download asset on assetId:" + assetId, e);
 			}
 		}
 
@@ -80,9 +104,59 @@ public class DownloadAssetAction extends InfoGlueAbstractAction
 			this.getResponse().sendError(HttpServletResponse.SC_NOT_FOUND);
 		}
 		
+		logger.debug("Asset url was " + assetUrl);
+		
 		return NONE;
 	}
+	
+	
+	/**
+	 * Return true if the asset identified by contentId, languageId and assetKey is available in
+	 * the current operating mode.
+	 */
+	boolean isAssetAvailableInCurrentMode(int contentId, int languageId, String assetKey)
+	{
+		boolean assetAvailable = false;
+		try 
+		{
+			int operatingMode = getCurrentOperatingMode();
+			logger.debug("stateId is " + operatingMode);
 
+			return DigitalAssetController.getController().isAssetAvailableInState(contentId, languageId, assetKey, operatingMode, true);
+		}
+		catch (SystemException e) 
+		{
+			logger.error("Could not check asset availability for contentId: " + contentId + " (" + languageId + "/" + assetKey + ")", e);
+		}
+		return assetAvailable;
+	}
+
+	/**
+	 * Return true if the asset identified by assetId is available in
+	 * the current operating mode.
+	 */
+	boolean isAssetAvailableInCurrentMode(int assetId)
+	{
+		boolean assetAvailable = false;
+		try 
+		{
+			int operatingMode = getCurrentOperatingMode();
+			return DigitalAssetController.getController().isAssetAvailableInState(assetId, operatingMode);
+		}
+		catch (SystemException e) 
+		{
+			logger.error("Could not check asset availability for asset id " + assetId, e);
+		}
+		return assetAvailable;
+	}
+
+	/**
+	 * Returns the current operating mode of the Infoglue webapp
+	 */
+	protected Integer getCurrentOperatingMode() {
+		return new Integer(CmsPropertyHandler.getOperatingMode());
+	}
+	
 	public String getAssetKey() 
 	{
 		return assetKey;

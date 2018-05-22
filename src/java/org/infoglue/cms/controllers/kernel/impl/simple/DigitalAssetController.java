@@ -52,6 +52,7 @@ import java.util.zip.ZipOutputStream;
 import org.apache.log4j.Logger;
 import org.exolab.castor.jdo.Database;
 import org.exolab.castor.jdo.OQLQuery;
+import org.exolab.castor.jdo.PersistenceException;
 import org.exolab.castor.jdo.QueryResults;
 import org.infoglue.cms.applications.common.VisualFormatter;
 import org.infoglue.cms.entities.content.ContentVO;
@@ -1691,9 +1692,16 @@ public class DigitalAssetController extends BaseController
 
 	/**
 	 * This method should return a String containing the URL for this digital asset.
-	 */
-	   	
+	 */   	
 	public static String getDigitalAssetUrl(Integer contentId, Integer languageId, String assetKey, boolean useLanguageFallback) throws SystemException, Bug
+    {
+		return getDigitalAssetUrlInState(contentId, languageId, assetKey, useLanguageFallback, null);
+    }
+	
+	/**
+	 * This method should return a String containing the URL for this digital asset.
+	 */   	
+	public static String getDigitalAssetUrlInState(Integer contentId, Integer languageId, String assetKey, boolean useLanguageFallback, Integer stateId) throws SystemException, Bug
     {
     	Database db = CastorDatabaseService.getDatabase();
 
@@ -1703,7 +1711,7 @@ public class DigitalAssetController extends BaseController
 
         try
         {
-        	assetUrl = getDigitalAssetUrl(contentId, languageId, assetKey, useLanguageFallback, db);
+        	assetUrl = getDigitalAssetUrl(contentId, languageId, assetKey, useLanguageFallback, stateId, db);
         	
             commitTransaction(db);
         }
@@ -1721,6 +1729,14 @@ public class DigitalAssetController extends BaseController
 	 * This method should return a String containing the URL for this digital asset.
 	 */
 	public static String getDigitalAssetUrl(Integer contentId, Integer languageId, String assetKey, boolean useLanguageFallback, Database db) throws SystemException, Bug, Exception
+	{
+		return getDigitalAssetUrl(contentId, languageId, assetKey, useLanguageFallback, null, db);
+	}
+	
+	/**
+	 * This method should return a String containing the URL for this digital asset.
+	 */
+	public static String getDigitalAssetUrl(Integer contentId, Integer languageId, String assetKey, boolean useLanguageFallback, Integer stateId, Database db) throws SystemException, Bug, Exception
     {
 		if(contentId == null || assetKey == null)
 		{
@@ -1730,12 +1746,13 @@ public class DigitalAssetController extends BaseController
     	String assetUrl = null;
 
     	ContentVO contentVO = ContentController.getContentController().getContentVOWithId(contentId, db);
-    	if(logger.isInfoEnabled())
+    	if (logger.isInfoEnabled())
     	{
-	    	logger.info("content:" + contentVO.getName());
-	    	logger.info("repositoryId:" + contentVO.getRepositoryId());
-	    	logger.info("languageId:" + languageId);
-	    	logger.info("assetKey:" + assetKey);
+    		logger.info("getDigitalAssetUrl(Integer contentId, Integer languageId, String assetKey, boolean useLanguageFallback, Integer stateId, Database db):");
+	    	logger.info("content: " + contentVO.getName());
+	    	logger.info("repositoryId: " + contentVO.getRepositoryId());
+	    	logger.info("languageId: " + languageId);
+	    	logger.info("assetKey: " + assetKey);
     	}
 
 		if(assetKey != null)
@@ -1764,11 +1781,22 @@ public class DigitalAssetController extends BaseController
         	sb.append("/");
         }
         
-    	ContentVersionVO contentVersionVO = ContentVersionController.getContentVersionController().getLatestActiveContentVersionVO(contentId, languageId, db);
+        logger.debug("Url prefix (sb): " + sb);
+        
+    	ContentVersionVO contentVersionVO;
+		logger.debug("stateId is: " + stateId);
+    	if (stateId != null) 
+    	{
+    		contentVersionVO = ContentVersionController.getContentVersionController().getLatestActiveContentVersionVO(contentId, languageId, stateId, db);
+    	}
+    	else
+    	{
+    		contentVersionVO = ContentVersionController.getContentVersionController().getLatestActiveContentVersionVO(contentId, languageId, db);
+    	}
 
     	if(logger.isInfoEnabled())
     	{
-    		logger.info("contentVersionVO:" + contentVersionVO);
+    		logger.info("contentVersionVO: " + contentVersionVO);
     	}
     	
 		DigitalAssetVO digitalAssetVO = null;
@@ -1821,7 +1849,7 @@ public class DigitalAssetController extends BaseController
 			if (languageId.intValue() != masterLanguageVO.getId().intValue())
 			{
 				// Try to call this method with the master language instead
-				assetUrl = getDigitalAssetUrl(contentId, masterLanguageVO.getId(), assetKey, useLanguageFallback, db);
+				assetUrl = getDigitalAssetUrl(contentId, masterLanguageVO.getId(), assetKey, useLanguageFallback, stateId, db);
 			}
 		}
 		
@@ -2948,6 +2976,129 @@ public class DigitalAssetController extends BaseController
 		return assetFile;
 	}
 
+	/**
+	 * Return true if the asset identified by assetId is available in the specified state.
+	 */
+	public Boolean isAssetAvailableInState(Integer assetId, Integer stateId) throws SystemException {
+		Boolean available = false;
+		Database db = CastorDatabaseService.getDatabase();
+
+        beginTransaction(db);
+        
+        try
+        {
+        	available = isAssetAvailableInState(assetId, stateId, db);
+            commitTransaction(db);            
+        }
+        catch(Exception e)
+        {
+        	rollbackTransaction(db);
+            logger.error("Could not determine if asset " + assetId + " is available in state " + stateId, e);
+            throw new SystemException(e.getMessage(), e);
+        }
+        
+        return available;
+    }     
+
+	/**
+	 * Return true if the asset identified by assetId is available in the specified state.
+	 */
+	public Boolean isAssetAvailableInState(Integer contentId, Integer languageId, String assetKey, Integer stateId, Boolean useLanguageFallback) throws SystemException {
+		Boolean available = false;
+		Database db = CastorDatabaseService.getDatabase();
+
+        beginTransaction(db);
+        
+        try
+        {
+        	available = isAssetAvailableInState(contentId, languageId, assetKey, stateId, useLanguageFallback, db);
+            commitTransaction(db);            
+        }
+        catch(Exception e)
+        {
+        	rollbackTransaction(db);
+            logger.error("Could not determine if asset " + contentId + "/" + languageId + "/" + assetKey + " is available in state " + stateId, e);
+            throw new SystemException(e.getMessage(), e);
+        }
+        
+        return available;
+    }     
+
+	/**
+	 * Return true if the asset identified by assetId is available in the specified state.
+	 */
+	public Boolean isAssetAvailableInState(Integer assetId, Integer stateId, Database db) throws PersistenceException {
+		logger.debug("Making a sql call for assets on " + assetId + ", " + stateId);
+
+		String sql = "SELECT cv.contentVersionId, cv.stateId, cv.modifiedDateTime, cv.versionComment, cv.isCheckedOut, cv.isActive, cv.contentId, cv.languageId, cv.versionModifier FROM cmContentVersionDigitalAsset cvda, cmContentVersion cv WHERE cvda.contentVersionId = cv.contentVersionId AND cv.isActive = 1 AND cv.stateId >= $1 AND cvda.digitalAssetId = $2";
+		OQLQuery oql = db.getOQLQuery("CALL SQL " + sql + " AS org.infoglue.cms.entities.content.impl.simple.SmallestContentVersionImpl"); 
+		oql.bind(stateId);
+    	oql.bind(assetId);
+    	
+    	QueryResults results = oql.execute(Database.READONLY);
+		
+		Boolean available = results.hasMore();
+		
+		results.close();
+		oql.close();
+			
+		logger.debug("Asset " + assetId + " was available in state " + stateId + ": " + available);
+		return available;
+	}
+	
+	/**
+	 * Return true if the asset identified by assetId is available in the specified state.
+	 * @param useLanguageFallback TODO
+	 */
+	public Boolean isAssetAvailableInState(Integer contentId, Integer languageId, String assetKey, Integer stateId, Boolean useLanguageFallback, Database db) throws PersistenceException {
+		logger.debug("Making an sql call for assets on " + contentId + "," + languageId + "," + assetKey  + ", " + stateId + ", " + useLanguageFallback);
+
+		String sql = "SELECT cv.contentVersionId, cv.stateId, cv.modifiedDateTime, cv.versionComment, cv.isCheckedOut, cv.isActive, cv.contentId, cv.languageId, cv.versionModifier FROM cmContentVersion AS cv, cmContentVersionDigitalAsset AS cvda, cmDigitalAsset AS da WHERE cv.contentVersionId = cvda.contentVersionId AND cvda.digitalAssetId = da.digitalAssetId AND cv.contentId = $1 AND cv.languageId = $2 AND da.assetKey = $3 AND cv.stateId >= $4";
+
+		OQLQuery oql = db.getOQLQuery("CALL SQL " + sql + " AS org.infoglue.cms.entities.content.impl.simple.SmallestContentVersionImpl"); 
+
+		oql.bind(contentId);
+		oql.bind(languageId);
+		oql.bind(assetKey);
+		oql.bind(stateId);
+    	
+    	QueryResults results = oql.execute(Database.READONLY);
+		
+		Boolean available = results.hasMore();
+		
+		results.close();
+		oql.close();
+			
+		logger.debug("Asset " + contentId + "_" + languageId + "_" + assetKey + " was available in state " + stateId + ": " + available);
+		
+		if (!available && useLanguageFallback) {
+			logger.debug("Using language fallback");
+			ContentVO contentVO;
+			// Get the master language of the repository of the content with the asset
+			try {
+				contentVO = ContentController.getContentController().getContentVOWithId(contentId);
+				if (contentVO != null) {
+					int repositoryId = contentVO.getRepositoryId();
+					Integer masterLanguageId = LanguageController.getController().getMasterLanguage(repositoryId).getId();
+					// Check that we didn't already check the asset against the master language
+					if (masterLanguageId != null && !masterLanguageId.equals(languageId)) {
+						// Fall back on the master language and check if the asset is available there
+						available = isAssetAvailableInState(contentId, masterLanguageId, assetKey, stateId, false);
+					}
+				} else {
+					logger.debug("The contentVO was null");
+				}
+			} catch (SystemException e) {
+				logger.warn("Could not do language fallback", e);
+			} catch (Bug e) {
+				logger.warn("Could not do language fallback", e);
+			} catch (Exception e) {
+				logger.warn("Could not do language fallback", e);
+			}
+		}
+		
+		return available;
+	}
 }
 /*
 class FilenameFilterImpl implements FilenameFilter 

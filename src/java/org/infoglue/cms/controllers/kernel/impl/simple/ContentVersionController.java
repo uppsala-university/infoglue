@@ -603,6 +603,7 @@ public class ContentVersionController extends BaseController
     
 	public ContentVersionVO getLatestActiveContentVersionVO(Integer contentId, Integer languageId, Integer stateId, Database db) throws SystemException, Bug, Exception
 	{
+		logger.debug("getLatestActiveContentVersionVO with stateId " + stateId);
 		Timer t = new Timer();
 		
     	ContentVersionVO contentVersionVO = null;
@@ -714,6 +715,8 @@ public class ContentVersionController extends BaseController
     
 	public ContentVersionVO getLatestActiveContentVersionVO(Integer contentId, Integer languageId, Database db) throws SystemException, Bug, Exception
 	{
+		logger.debug("getLatestActiveContentVersionVO without stateId");
+
 		String contentVersionKey = "contentVersionVO_" + contentId + "_" + languageId + "_active";
 		ContentVersionVO contentVersionVO = (ContentVersionVO)CacheController.getCachedObjectFromAdvancedCache("contentVersionCache", contentVersionKey);
 		if(contentVersionVO != null)
@@ -1757,7 +1760,7 @@ public class ContentVersionController extends BaseController
     	    if(!oldContentVersionVO.getStateId().equals(ContentVersionVO.WORKING_STATE) && !latestContentVersionVO.getStateId().equals(ContentVersionVO.WORKING_STATE))
 			{
 				List<EventVO> events = new ArrayList<EventVO>();
-				contentVersion = ContentStateController.changeState(oldContentVersionVO.getId(), contentVO, ContentVersionVO.WORKING_STATE, (contentVersionVO.getVersionComment().equals("No comment") ? "new working version" : contentVersionVO.getVersionComment()), false, null, principal, oldContentVersionVO.getContentId(), db, events);
+				contentVersion = ContentStateController.changeState(oldContentVersionVO.getId(), contentVO, ContentVersionVO.WORKING_STATE, (contentVersionVO.getVersionComment().equals("No comment") ? "new working version" : contentVersionVO.getVersionComment()), true, null, principal, oldContentVersionVO.getContentId(), db, events);
 				contentVersion.setVersionValue(contentVersionVO.getVersionValue());
 				/*
 				List<String> changedAttributes = getChangedAttributeNames(oldContentVersionVO, contentVersionVO);
