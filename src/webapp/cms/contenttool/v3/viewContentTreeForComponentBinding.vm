@@ -95,15 +95,18 @@
 			
 			if(entityId == '' || entityId == '${select}' || entityId == '-1')
 			{
-				alert("You must choose a content before you can save");
+				var alertLabelNoContent = '$ui.getString("tool.contenttool.linkDialog.noContentError")';
+				alert(alertLabelNoContent);
 			}
 			else if(isFolder == 'yes' && folderPermission == 'forbidden')
 			{
-				alert("You cannot bind a folder");
+				var alertLabelNotFolder = '$ui.getString("tool.contenttool.linkDialog.notFolderError")';
+				alert(alertLabelNotFolder);
 			}
 			else if(!isFolder && folderPermission == 'exclusive')
 			{
-				alert("You can only bind a folder");
+				var alertLabelOnlyFolder = '$ui.getString("tool.contenttool.linkDialog.onlyFolderError")';
+				alert(alertLabelOnlyFolder);
 			}
 			else
 			{
