@@ -738,7 +738,6 @@ public class CmsJDOCallback implements CallbackInterceptor
 		   c.getName().contains(".RepositoryImpl") || 
 		   c.getName().contains(".RepositoryLanguageImpl") || 
 		   c.getName().contains(".DigitalAssetImpl") || 
-		   c.getName().contains(".MediumDigitalAssetImpl") || 
 		   c.getName().contains(".ContentImpl") || 
 		   c.getName().contains(".MediumContentImpl") || 
 		   c.getName().contains(".SmallContentImpl") || 
@@ -789,7 +788,6 @@ public class CmsJDOCallback implements CallbackInterceptor
 		   c.getName().contains(".RepositoryImpl") || 
 		   c.getName().contains(".RepositoryLanguageImpl") || 
 		   c.getName().contains(".DigitalAssetImpl") || 
-		   c.getName().contains(".MediumDigitalAssetImpl") || 
 		   c.getName().contains(".ContentImpl") || 
 		   c.getName().contains(".MediumContentImpl") || 
 		   c.getName().contains(".SmallContentImpl") || 

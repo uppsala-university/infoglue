@@ -45,7 +45,7 @@ public class PageUrlTag extends ComponentLogicTag
     private boolean useStructureInheritance = true;
     private Boolean forceHTTPProtocol = null; // null means "not set with parameter"
     private boolean includeLanguageId = true;
-    private boolean isDecorated = false;
+    private Boolean isDecorated;
 	private Integer siteNodeId;
 	private Integer languageId;
 	private Integer contentId = new Integer(-1);
@@ -72,7 +72,7 @@ public class PageUrlTag extends ComponentLogicTag
         this.extraParameters = null;
         this.includeLanguageId = true;
         this.operatingMode = null;
-        this.isDecorated = false;
+        this.isDecorated = null;
         this.forceHTTPProtocol = null;
         
         return EVAL_PAGE;
@@ -80,6 +80,7 @@ public class PageUrlTag extends ComponentLogicTag
 
 	private String getPageUrl() throws JspTagException
 	{
+		DeliveryContext dc = getController().getDeliveryContext();
 	    if(this.languageId == null)
 	        this.languageId = getController().getLanguageId();
 	    String url = "";
@@ -95,17 +96,19 @@ public class PageUrlTag extends ComponentLogicTag
 	 		}
 	    }
 	    
-	    if (operatingMode == null)
-	    {
+
+	    if (operatingMode == null && isDecorated == null) {
 	    	url = getController().getPageUrl(siteNodeId, languageId, includeLanguageId, contentId);
-	    }
-	    else
-	    {
-	    	if (operatingMode.equalsIgnoreCase("3") && isDecorated == true) {
+	    } else {
+	    	if (operatingMode == null) {
+	    		operatingMode = dc.getOperatingMode();
+	    	}
+	    	
+	    	if (isDecorated == null ||operatingMode.equalsIgnoreCase("3") && isDecorated == true) {
 	    		/* live pages can not med combined with decorated mode */
 		    	isDecorated = false;
 	    	}
-	    	DeliveryContext dc = getController().getDeliveryContext();
+	    	
 	    	String tempOperatingMode = dc.getOperatingMode();
 	    	dc.setOperatingMode(operatingMode);
 	    	try
