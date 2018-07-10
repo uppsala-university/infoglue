@@ -253,7 +253,8 @@
 	function useSelectedPage()
 	{
 		//alert("selectedSiteNodeContentId:" +  selectedSiteNodeContentId);
-		if(selectedSiteNodeId == "")
+		var parsedSiteNodeId = parseInt(selectedSiteNodeId, 10);
+		if(isNaN(parsedSiteNodeId) || parsedSiteNodeId < 1)
 			alert("$ui.getString("tool.contenttool.linkDialog.pageMandatoryWarning")");
 		else
 		{
