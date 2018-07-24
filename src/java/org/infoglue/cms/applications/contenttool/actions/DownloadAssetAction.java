@@ -121,8 +121,12 @@ public class DownloadAssetAction extends InfoGlueAbstractAction
 		{
 			int operatingMode = getCurrentOperatingMode();
 			logger.debug("stateId is " + operatingMode);
+			
+			// If we are looking for an asset in live (operatingMode == 3) we don't want
+			// it if it isn't available in the latest published version (IG-4407)
+			boolean mustBeLatest = operatingMode == 3;
 
-			return DigitalAssetController.getController().isAssetAvailableInState(contentId, languageId, assetKey, operatingMode, true);
+			return DigitalAssetController.getController().isAssetAvailableInState(contentId, languageId, assetKey, operatingMode, true, mustBeLatest);
 		}
 		catch (SystemException e) 
 		{
