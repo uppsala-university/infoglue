@@ -3004,7 +3004,7 @@ public class DigitalAssetController extends BaseController
 	 * Return true if the asset identified by assetId is available in the specified state.
 	 * @param useLanguageFallback TODO
 	 */
-	public Boolean isAssetAvailableInState(Integer contentId, Integer languageId, String assetKey, Integer stateId, Boolean useLanguageFallback) throws SystemException {
+	public Boolean isAssetAvailableInState(Integer contentId, Integer languageId, String assetKey, Integer stateId, Boolean useLanguageFallback, Boolean mustBeLatest) throws SystemException {
 		Boolean available = false;
 		Database db = CastorDatabaseService.getDatabase();
 
@@ -3012,7 +3012,7 @@ public class DigitalAssetController extends BaseController
         
         try
         {
-        	available = isAssetAvailableInState(contentId, languageId, assetKey, stateId, useLanguageFallback, db);
+        	available = isAssetAvailableInState(contentId, languageId, assetKey, stateId, useLanguageFallback, mustBeLatest, db);
             commitTransaction(db);            
         }
         catch(Exception e)
@@ -3049,12 +3049,15 @@ public class DigitalAssetController extends BaseController
 	
 	/**
 	 * Return true if the asset identified by assetId is available in the specified state.
-	 * @param useLanguageFallback TODO
+	 * @param mustBeLatest Only return true if the asset is found in the latest version of the specified state
 	 */
-	public Boolean isAssetAvailableInState(Integer contentId, Integer languageId, String assetKey, Integer stateId, Boolean useLanguageFallback, Database db) throws PersistenceException {
-		logger.debug("Making an sql call for assets on " + contentId + "," + languageId + "," + assetKey  + ", " + stateId + ", " + useLanguageFallback);
+	public Boolean isAssetAvailableInState(Integer contentId, Integer languageId, String assetKey, Integer stateId, Boolean useLanguageFallback, Boolean mustBeLatest, Database db) throws PersistenceException {
+		logger.debug("Making an sql call for assets on " + contentId + "," + languageId + "," + assetKey  + ", " + stateId + ", " + useLanguageFallback + ", " + mustBeLatest);
 
-		String sql = "SELECT cv.contentVersionId, cv.stateId, cv.modifiedDateTime, cv.versionComment, cv.isCheckedOut, cv.isActive, cv.contentId, cv.languageId, cv.versionModifier FROM cmContentVersion AS cv, cmContentVersionDigitalAsset AS cvda, cmDigitalAsset AS da WHERE cv.contentVersionId = cvda.contentVersionId AND cvda.digitalAssetId = da.digitalAssetId AND cv.contentId = $1 AND cv.languageId = $2 AND da.assetKey = $3 AND cv.stateId >= $4";
+		String sql = 
+				"SELECT cv.contentVersionId, cv.stateId, cv.modifiedDateTime, cv.versionComment, cv.isCheckedOut, cv.isActive, cv.contentId, cv.languageId, cv.versionModifier " +
+				"FROM cmContentVersion AS cv, cmContentVersionDigitalAsset AS cvda, cmDigitalAsset AS da " +
+				"WHERE cv.contentVersionId = cvda.contentVersionId AND cvda.digitalAssetId = da.digitalAssetId AND cv.contentId = $1 AND cv.languageId = $2 AND da.assetKey = $3 AND cv.stateId >= $4";
 
 		OQLQuery oql = db.getOQLQuery("CALL SQL " + sql + " AS org.infoglue.cms.entities.content.impl.simple.SmallestContentVersionImpl"); 
 
@@ -3067,6 +3070,20 @@ public class DigitalAssetController extends BaseController
 		
 		Boolean available = results.hasMore();
 		
+		if (available && mustBeLatest) {
+			try {
+				ContentVersionVO latestActiveVersion = ContentVersionController.getContentVersionController().getLatestActiveContentVersionVO(contentId, languageId, stateId);
+
+				available = false;
+				for (SmallestContentVersionImpl version = (SmallestContentVersionImpl) results.next(); results.hasMore() && !available; version = (SmallestContentVersionImpl) results.next()) {
+					available = available || version.getId() == latestActiveVersion.getId();
+				}
+			} catch (Exception e) {
+				logger.warn("Could not get latest active version for content " + contentId + " in state " + stateId, e);
+				available = false;
+			}
+		}
+
 		results.close();
 		oql.close();
 			
@@ -3084,7 +3101,7 @@ public class DigitalAssetController extends BaseController
 					// Check that we didn't already check the asset against the master language
 					if (masterLanguageId != null && !masterLanguageId.equals(languageId)) {
 						// Fall back on the master language and check if the asset is available there
-						available = isAssetAvailableInState(contentId, masterLanguageId, assetKey, stateId, false);
+						available = isAssetAvailableInState(contentId, masterLanguageId, assetKey, stateId, false, mustBeLatest);
 					}
 				} else {
 					logger.debug("The contentVO was null");
