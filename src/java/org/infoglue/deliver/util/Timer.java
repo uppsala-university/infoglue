@@ -93,7 +93,7 @@ public class Timer
 			elapsedTime = System.currentTimeMillis() - lastPrintTime;
 			lastPrintTime = System.currentTimeMillis();
 			if(elapsedTime > minimumTimeToPrint)
-				logger.warn(message + " - Elapsed time since last report: " + elapsedTime);
+				logger.info(message + " - Elapsed time since last report: " + elapsedTime);
 		}
 	}
 
@@ -113,7 +113,7 @@ public class Timer
 		{
 			elapsedTimeNanos = System.nanoTime() - lastPrintTimeNanos;
 			lastPrintTimeNanos = System.nanoTime();
-			logger.warn(message + " - Elapsed time since last report (microsecond): " + elapsedTimeNanos / 1000);
+			logger.info(message + " - Elapsed time since last report (microsecond): " + elapsedTimeNanos / 1000);
 		}
 	}
 

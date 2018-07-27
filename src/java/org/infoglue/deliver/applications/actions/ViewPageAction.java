@@ -745,7 +745,7 @@ public class ViewPageAction extends InfoGlueAbstractAction
 			float memoryDiff = (((float)Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) - startTotalMemory) / 1024f / 1024f;
 			logger.info("memoryDiff:" + memoryDiff + "(" + startTotalMemory + "-" + ((float)Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) + ")");
 			if(memoryDiff > 100)
-				logger.warn("During the rendering of: " + this.getOriginalFullURL() + " a large amount (" + (int)memoryDiff + "MB) was allocated.");
+				logger.info("During the rendering of: " + this.getOriginalFullURL() + " a large amount (" + (int)memoryDiff + "MB) was allocated.");
 			
 		    //System.out.println("The page delivery took " + elapsedTime + "ms for request " + this.getRequest().getRequestURL() + "?" + this.getRequest().getQueryString());
 			if(!memoryWarningSent)
@@ -1309,7 +1309,7 @@ public class ViewPageAction extends InfoGlueAbstractAction
 			float memoryDiff = (((float)Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) - startTotalMemory) / 1024f / 1024f;
 			logger.info("memoryDiff:" + memoryDiff + "(" + startTotalMemory + "-" + ((float)Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) + ")");
 			if(memoryDiff > 100)
-				logger.warn("During the rendering of: " + this.getOriginalFullURL() + " a large amount (" + (int)memoryDiff + "MB) was allocated.");
+				logger.info("During the rendering of: " + this.getOriginalFullURL() + " a large amount (" + (int)memoryDiff + "MB) was allocated.");
 			
 			if(!memoryWarningSent)
 			{
