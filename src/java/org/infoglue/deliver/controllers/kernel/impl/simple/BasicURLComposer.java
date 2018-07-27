@@ -383,7 +383,7 @@ public class BasicURLComposer extends URLComposer
 
     	if(siteNodeId == null || siteNodeId.intValue() == -1)
     	{
-    		logger.warn("composePageUrl was called with siteNodeId:" + siteNodeId + " from the page with key: " + deliveryContext.getPageKey() + " (siteNodeId=" + deliveryContext.getSiteNodeId() + ")");
+    		logger.info("composePageUrl was called with siteNodeId:" + siteNodeId + " from the page with key: " + deliveryContext.getPageKey() + " (siteNodeId=" + deliveryContext.getSiteNodeId() + ")");
     		return "";
     	}
     	
@@ -426,7 +426,7 @@ public class BasicURLComposer extends URLComposer
 			SiteNodeVO siteNodeVO = SiteNodeController.getController().getSiteNodeVOWithId(siteNodeId, db);
 			if(siteNodeVO == null)
 			{
-				logger.warn("composePageUrl was called with siteNodeId which does not exist:" + siteNodeId + " from the page with key: " + deliveryContext.getPageKey());
+				logger.info("composePageUrl was called with siteNodeId which does not exist:" + siteNodeId + " from the page with key: " + deliveryContext.getPageKey());
 				return "";
 			}
 
@@ -488,7 +488,7 @@ public class BasicURLComposer extends URLComposer
 			SiteNodeVO siteNode = SiteNodeController.getController().getSmallSiteNodeVOWithId(siteNodeId, db);
 			if(siteNode == null)
 			{
-				logger.warn("composePageUrl was called with siteNodeId which does not exist:" + siteNodeId + " from the page with key: " + deliveryContext.getPageKey());
+				logger.info("composePageUrl was called with siteNodeId which does not exist:" + siteNodeId + " from the page with key: " + deliveryContext.getPageKey());
 				return "";
 			}
 			String enableNiceURIForLanguage = CmsPropertyHandler.getEnableNiceURIForLanguage();
@@ -929,7 +929,7 @@ public class BasicURLComposer extends URLComposer
 
     	if(siteNodeId == null || siteNodeId.intValue() == -1)
     	{
-    		logger.warn("composePageUrl was called with siteNodeId:" + siteNodeId + " from the page with key: " + deliveryContext.getPageKey() + " (siteNodeId=" + deliveryContext.getSiteNodeId() + ")");
+    		logger.info("composePageUrl was called with siteNodeId:" + siteNodeId + " from the page with key: " + deliveryContext.getPageKey() + " (siteNodeId=" + deliveryContext.getSiteNodeId() + ")");
     		return "";
     	}
     	
@@ -986,7 +986,7 @@ public class BasicURLComposer extends URLComposer
 			SiteNodeVO siteNodeVO = SiteNodeController.getController().getSiteNodeVOWithId(siteNodeId, db);
 			if(siteNodeVO == null)
 			{
-				logger.warn("composePageUrl was called with siteNodeId which does not exist:" + siteNodeId + " from the page with key: " + deliveryContext.getPageKey());
+				logger.info("composePageUrl was called with siteNodeId which does not exist:" + siteNodeId + " from the page with key: " + deliveryContext.getPageKey());
 				return "";
 			}
 
@@ -1044,7 +1044,7 @@ public class BasicURLComposer extends URLComposer
 			SiteNodeVO siteNode = SiteNodeController.getController().getSmallSiteNodeVOWithId(siteNodeId, db);
 			if(siteNode == null)
 			{
-				logger.warn("composePageUrl was called with siteNodeId which does not exist:" + siteNodeId + " from the page with key: " + deliveryContext.getPageKey());
+				logger.info("composePageUrl was called with siteNodeId which does not exist:" + siteNodeId + " from the page with key: " + deliveryContext.getPageKey());
 				return "";
 			}
 			String enableNiceURIForLanguage = CmsPropertyHandler.getEnableNiceURIForLanguage();
@@ -1473,7 +1473,7 @@ public class BasicURLComposer extends URLComposer
     {
     	if(siteNodeId == null || siteNodeId.intValue() == -1)
     	{
-    		logger.warn("composePageUrl was called with siteNodeId:" + siteNodeId);
+    		logger.info("composePageUrl was called with siteNodeId:" + siteNodeId);
     		return "";
     	}
     	
@@ -1539,7 +1539,7 @@ public class BasicURLComposer extends URLComposer
             SiteNodeVO siteNode = SiteNodeController.getController().getSmallSiteNodeVOWithId(siteNodeId, db);
         	if(siteNode == null)
         	{
-	        	logger.warn("composePageUrl was called with siteNodeId which does not exist:" + siteNodeId + " from the page with key: " + deliveryContext.getPageKey());
+	        	logger.info("composePageUrl was called with siteNodeId which does not exist:" + siteNodeId + " from the page with key: " + deliveryContext.getPageKey());
 	    		return "";
         	}
         	

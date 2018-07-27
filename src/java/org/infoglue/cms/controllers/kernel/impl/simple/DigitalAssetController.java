@@ -3089,12 +3089,8 @@ public class DigitalAssetController extends BaseController
 				} else {
 					logger.debug("The contentVO was null");
 				}
-			} catch (SystemException e) {
-				logger.warn("Could not do language fallback", e);
-			} catch (Bug e) {
-				logger.warn("Could not do language fallback", e);
 			} catch (Exception e) {
-				logger.warn("Could not do language fallback", e);
+				logger.info("Could not do language fallback when checking asset availability for " + contentId);
 			}
 		}
 		

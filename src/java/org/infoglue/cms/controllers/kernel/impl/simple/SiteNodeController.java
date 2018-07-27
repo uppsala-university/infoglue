@@ -323,7 +323,7 @@ public class SiteNodeController extends BaseController
 				}
 			}
 			else
-				logger.warn("SiteNode not found: " + siteNodeId);
+				logger.info("SiteNode not found: " + siteNodeId);
 			
 			results.close();
 			oql.close();
