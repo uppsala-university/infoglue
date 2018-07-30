@@ -3896,7 +3896,7 @@ public class CacheController extends Thread
 						
 						long elapsedTime = t.getElapsedTime();
 						if(elapsedTime > 20)
-							logger.warn("Clear cache end took " + e.getKey() + ": " + elapsedTime);
+							logger.info("Clear cache end took " + e.getKey() + ": " + elapsedTime);
 						logger.info("Cleared cache:" + e.getKey());
 	
 						if(!selectiveCacheUpdate)
