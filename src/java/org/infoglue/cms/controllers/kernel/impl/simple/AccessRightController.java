@@ -281,11 +281,9 @@ public class AccessRightController extends BaseController
 		//CacheController.cacheObjectInAdvancedCache("personalAuthorizationCache", "authorizationMap_" + principal.getName(), accessRightsMap);
 		CacheController.cacheObject("userAccessCache", "authorizationMap_" + principal.getName(), accessRightsMap);
 
-		//logger.info("accessRightsMap:" + accessRightsMap.size());
-		//logger.info("duplicates:" + duplicates);
 		//principalAccessRights.put("" + principal.getName(), accessRightsMap);
-		logger.warn("accessRightsMap:" + accessRightsMap.size());
-		logger.warn("duplicates:" + duplicates);
+		logger.info("accessRightsMap:" + accessRightsMap.size());
+		logger.info("duplicates:" + duplicates);
 		//t.printElapsedTime("Read took:" + accessRightVOList.size());
 		
 		results.close();

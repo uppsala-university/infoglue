@@ -632,7 +632,7 @@ public class BasicTemplateController implements TemplateController
 		}
 		catch(Exception e)
 		{
-			logger.warn("An error occurred trying to get the content with id " + contentId + ":" + e.getMessage());
+			logger.info("An error occurred trying to get the content with id " + contentId + ":" + e.getMessage());
 		}
 
 		return content;
@@ -4795,7 +4795,7 @@ public class BasicTemplateController implements TemplateController
 		}
 		catch(Exception e)
 		{
-			logger.warn("An error occurred trying to get the siteNode with id " + siteNodeId + " on URL: " + getOriginalFullURL() + "\nMessage: " + e.getMessage() + "");
+			logger.info("An error occurred trying to get the siteNode with id " + siteNodeId + " on URL: " + getOriginalFullURL() + "\nMessage: " + e.getMessage() + "");
 		}
 
 		return siteNodeVO;

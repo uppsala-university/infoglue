@@ -861,7 +861,7 @@ public class RegistryController extends BaseController
 	        		localContentVersions.addAll(queuedSiteNodeVersions);
 	        		queuedSiteNodeVersions.clear();
 				}
-	        	logger.warn("localContentVersions:" + localContentVersions.size());
+	        	logger.info("localContentVersions:" + localContentVersions.size());
 	        	
 				try
 				{
@@ -875,7 +875,7 @@ public class RegistryController extends BaseController
 							updateSiteNodeVersion(siteNodeVersionVO, db);
 						}
 
-						logger.warn("Done refreshing page registry took:" + t.getElapsedTime());
+						logger.info("Done refreshing page registry took:" + t.getElapsedTime());
 						
 						commitTransaction(db);
 					} 
