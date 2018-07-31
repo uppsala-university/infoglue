@@ -179,7 +179,7 @@ public class AjaxDecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHT
 				if(this.getDeliveryContext().getEvaluateFullPage() || !CmsPropertyHandler.getDisableDecoratedFinalRendering())
 				{	
 					if(decoratePageTemplate.length() > 300000)
-						logger.warn("The page at " + this.getTemplateController().getOriginalFullURL() + " was huge and the extra rendering of decorated pages takes some time and memory. If possible please make sure the components handles all rendering they need themselves and disable this step.");
+						logger.info("The page at " + this.getTemplateController().getOriginalFullURL() + " was huge and the extra rendering of decorated pages takes some time and memory. If possible please make sure the components handles all rendering they need themselves and disable this step.");
 					
 					if(logger.isInfoEnabled())
 						logger.info("Running extra decoration");
