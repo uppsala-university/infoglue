@@ -70,6 +70,9 @@ public class ComponentPropertyValueTag extends ComponentLogicTag
 	        	else
 	        		propertyValue = getComponentLogic().getPropertyValue(siteNodeId, propertyName, useLanguageFallback, useInheritance);	
 	        }
+
+	        // "Unescape" quotes since they are "escaped" when saved in ViewSiteNodePageComponentsAction.doUpdateComponentProperties()
+	        propertyValue = propertyValue.replaceAll("&quot;", "\"");
 	        
 	        if(parse && propertyValue != null && !propertyValue.equals(""))
 	        {

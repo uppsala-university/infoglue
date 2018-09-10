@@ -3002,7 +3002,6 @@ public class DigitalAssetController extends BaseController
 
 	/**
 	 * Return true if the asset identified by assetId is available in the specified state.
-	 * @param useLanguageFallback TODO
 	 */
 	public Boolean isAssetAvailableInState(Integer contentId, Integer languageId, String assetKey, Integer stateId, Boolean useLanguageFallback) throws SystemException {
 		Boolean available = false;
