@@ -220,6 +220,44 @@ public class PublicationController extends BaseController
 	}
 	
 	/**
+	 *  Returns all publications for a given entity 
+	 **/
+	public List<PublicationVO> getPublicationListByEntityValues(String entityName, String entityId) throws SystemException
+	{
+		Database db = CastorDatabaseService.getDatabase();
+		beginTransaction(db);
+		List<PublicationVO> res = new ArrayList<PublicationVO>();
+		
+		try
+		{
+			OQLQuery oql = db.getOQLQuery( "SELECT p FROM org.infoglue.cms.entities.publishing.impl.simple.PublicationImpl p WHERE p.publicationDetails.entityClass = $1 AND p.publicationDetails.entityId = $2 order by p.publicationDateTime desc");
+			oql.bind(entityName);
+			oql.bind(entityId);
+		
+			QueryResults results = oql.execute(Database.READONLY);
+		
+			while (results.hasMore())
+			{
+				PublicationDetail publication = (PublicationDetail)results.next();
+				res.add(publication.getPublication().getValueObject());
+			}
+		
+			results.close();
+			oql.close();
+			
+			commitTransaction(db);
+		}
+		catch(Exception e)
+		{
+			logger.error("An error occurred so we should not completes the transaction:" + e, e);
+			rollbackTransaction(db);
+			throw new SystemException(e.getMessage());
+		}
+		
+		return res;
+	}	
+	
+	/**
 	 * This method returns a list of earlier editions for this site.
 	 */
 	public List<PublicationVO> getPublicationList(Date startDate, String entityName, String entityId) throws SystemException
