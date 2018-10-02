@@ -1446,5 +1446,25 @@
 	        <rtexprvalue>true</rtexprvalue>
 		</attribute>
 	</tag>
-
+	<tag>
+	    <name>lastPublished</name>
+	    <tagclass>org.infoglue.deliver.taglib.common.EntityPublicationTag</tagclass>
+	    <bodycontent>empty</bodycontent>
+	    <info></info>
+	    <attribute>
+		    <name>id</name>
+	    	<required>true</required>
+	        <rtexprvalue>true</rtexprvalue>
+		</attribute>
+	    <attribute>
+		    <name>entitiyName</name>
+	    	<required>true</required>
+	        <rtexprvalue>true</rtexprvalue>
+		</attribute>
+	    <attribute>
+		    <name>entityId</name>
+	    	<required>true</required>
+	        <rtexprvalue>true</rtexprvalue>
+		</attribute>
+	</tag>
 </taglib>
