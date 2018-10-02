@@ -1457,7 +1457,7 @@
 	        <rtexprvalue>true</rtexprvalue>
 		</attribute>
 	    <attribute>
-		    <name>entitiyName</name>
+		    <name>entityName</name>
 	    	<required>true</required>
 	        <rtexprvalue>true</rtexprvalue>
 		</attribute>
