@@ -226,11 +226,12 @@ public class PublicationController extends BaseController
 	{
 		Database db = CastorDatabaseService.getDatabase();
 		beginTransaction(db);
+		
 		List<PublicationVO> res = new ArrayList<PublicationVO>();
 		
 		try
 		{
-			OQLQuery oql = db.getOQLQuery( "SELECT p FROM org.infoglue.cms.entities.publishing.impl.simple.PublicationDetailImpl p WHERE p.entityClass = $1 AND p.entityId = $2 order by p.publicationDateTime desc");
+			OQLQuery oql = db.getOQLQuery( "SELECT p FROM org.infoglue.cms.entities.publishing.impl.simple.PublicationImpl p WHERE p.publicationDetails.entityClass = $1 AND p.publicationDetails.entityId = $2 order by p.publicationDateTime desc");
 			oql.bind(entityName);
 			oql.bind(entityId);
 		
@@ -238,8 +239,8 @@ public class PublicationController extends BaseController
 		
 			while (results.hasMore())
 			{
-				PublicationDetail publicationDetail = (PublicationDetail)results.next();
-				res.add(publicationDetail);
+				Publication publication = (Publication)results.next();
+				res.add(publication.getValueObject());
 			}
 		
 			results.close();
