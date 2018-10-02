@@ -20,7 +20,7 @@
 *
 * ===============================================================================
 */
-package java.org.infoglue.deliver.taglib.common;
+package org.infoglue.deliver.taglib.common;
 
 import java.util.Collection;
 import java.util.List;
@@ -30,6 +30,7 @@ import javax.servlet.jsp.JspException;
 
 import org.infoglue.cms.controllers.kernel.impl.simple.PublicationController;
 import org.infoglue.cms.entities.publishing.PublicationVO;
+import org.infoglue.cms.exception.SystemException;
 import org.infoglue.deliver.taglib.AbstractTag;
 
 public class EntityPublicationTag extends AbstractTag 
@@ -46,13 +47,18 @@ public class EntityPublicationTag extends AbstractTag
 	
 	public int doEndTag() throws JspException
     {
-		List<PublicationVO> publicationList = PublicationController.getController().getPublicationListByEntityValues(entityName, entityId);
-		if (publicationList != null && publicationList.size() > 0) {
-			setResultAttribute(publicationList.get(0));
+		List<PublicationVO> publicationList;
+		try {
+			publicationList = PublicationController.getController().getPublicationListByEntityValues(entityName, entityId);
+		
+			if (publicationList != null && publicationList.size() > 0) {
+				setResultAttribute(publicationList.get(0));
+			}
+			this.entityName = null;
+			this.entityId = null;
+		} catch (SystemException e) {
+			throw new JspException("Error getting publication list for entityName:" + entityName + ", entityId:" + entityId);
 		}
-		this.entityName = null;
-		this.entityId = null;
-
         return EVAL_PAGE;
     }
     public void setEntityName(final String entityName) throws JspException
