@@ -220,7 +220,7 @@ public class PublicationController extends BaseController
 	}
 	
 	/**
-	 *  Returns all publications for a given entity 
+	 *  Returns all publications from a given entity 
 	 **/
 	public List<PublicationVO> getPublicationListByEntityValues(String entityName, String entityId) throws SystemException
 	{
@@ -230,7 +230,7 @@ public class PublicationController extends BaseController
 		
 		try
 		{
-			OQLQuery oql = db.getOQLQuery( "SELECT p FROM org.infoglue.cms.entities.publishing.impl.simple.PublicationImpl p WHERE p.publicationDetails.entityClass = $1 AND p.publicationDetails.entityId = $2 order by p.publicationDateTime desc");
+			OQLQuery oql = db.getOQLQuery( "SELECT p FROM org.infoglue.cms.entities.publishing.impl.simple.PublicationDetailImpl p WHERE p.publicationDetails.entityClass = $1 AND p.publicationDetails.entityId = $2 order by p.publicationDateTime desc");
 			oql.bind(entityName);
 			oql.bind(entityId);
 		
