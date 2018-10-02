@@ -230,7 +230,7 @@ public class PublicationController extends BaseController
 		
 		try
 		{
-			OQLQuery oql = db.getOQLQuery( "SELECT p FROM org.infoglue.cms.entities.publishing.impl.simple.PublicationDetailImpl p WHERE p.publicationDetails.entityClass = $1 AND p.publicationDetails.entityId = $2 order by p.publicationDateTime desc");
+			OQLQuery oql = db.getOQLQuery( "SELECT p FROM org.infoglue.cms.entities.publishing.impl.simple.PublicationDetailImpl p WHERE p.entityClass = $1 AND p.entityId = $2 order by p.publicationDateTime desc");
 			oql.bind(entityName);
 			oql.bind(entityId);
 		
@@ -238,8 +238,8 @@ public class PublicationController extends BaseController
 		
 			while (results.hasMore())
 			{
-				PublicationDetail publication = (PublicationDetail)results.next();
-				res.add(publication.getPublication().getValueObject());
+				PublicationDetail publicationDetail = (PublicationDetail)results.next();
+				res.add(publicationDetail);
 			}
 		
 			results.close();
