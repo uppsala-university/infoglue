@@ -57,7 +57,7 @@ public class EntityPublicationTag extends AbstractTag
 			this.entityName = null;
 			this.entityId = null;
 		} catch (SystemException e) {
-			throw new JspException("Error getting publication list for entityName:" + entityName + ", entityId:" + entityId);
+			throw new SystemException("Error getting publication list for entityName:" + entityName + ", entityId:" + entityId);
 		}
         return EVAL_PAGE;
     }
