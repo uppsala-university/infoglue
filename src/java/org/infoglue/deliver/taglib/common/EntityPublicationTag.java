@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.Map;
 
 import javax.servlet.jsp.JspException;
+import javax.servlet.jsp.JspTagException;
 
 import org.infoglue.cms.controllers.kernel.impl.simple.PublicationController;
 import org.infoglue.cms.entities.publishing.PublicationVO;
@@ -45,20 +46,20 @@ public class EntityPublicationTag extends AbstractTag
 		super();
 	}
 	
-	public int doEndTag() throws JspException
+	public int doEndTag() throws JspTagException
     {
-		List<PublicationVO> publicationList;
 		try {
-			publicationList = PublicationController.getController().getPublicationListByEntityValues(entityName, entityId);
-		
+			List<PublicationVO> publicationList = PublicationController.getController().getPublicationListByEntityValues(entityName, entityId);
+
 			if (publicationList != null && publicationList.size() > 0) {
 				setResultAttribute(publicationList.get(0));
 			}
 			this.entityName = null;
 			this.entityId = null;
 		} catch (SystemException e) {
-			throw new SystemException("Error getting publication list for entityName:" + entityName + ", entityId:" + entityId);
+			throw new JspTagException("Error getting publication list for entityName:" + entityName + ", entityId:" + entityId);
 		}
+		
         return EVAL_PAGE;
     }
     public void setEntityName(final String entityName) throws JspException
