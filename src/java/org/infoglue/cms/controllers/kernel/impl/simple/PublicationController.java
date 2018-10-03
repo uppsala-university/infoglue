@@ -236,7 +236,7 @@ public class PublicationController extends BaseController
 			oql.bind(entityName);
 			oql.bind(entityId);
 			System.out.println("oql: " + oql);
-			oql.
+
 			QueryResults results = oql.execute(Database.READONLY);
 
 			System.out.println("results: " + results);
