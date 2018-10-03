@@ -226,17 +226,19 @@ public class PublicationController extends BaseController
 	{
 		Database db = CastorDatabaseService.getDatabase();
 		beginTransaction(db);
-		
+		System.out.println(entityName + " :::" + entityId);
 		List<PublicationVO> res = new ArrayList<PublicationVO>();
 		
 		try
 		{
 			OQLQuery oql = db.getOQLQuery( "SELECT p FROM org.infoglue.cms.entities.publishing.impl.simple.PublicationImpl p WHERE p.publicationDetails.entityClass = $1 AND p.publicationDetails.entityId = $2 order by p.publicationDateTime desc");
+			
 			oql.bind(entityName);
 			oql.bind(entityId);
 		
 			QueryResults results = oql.execute(Database.READONLY);
-		
+			System.out.println("oql: " + oql);
+			System.out.println("results: " + results);
 			while (results.hasMore())
 			{
 				Publication publication = (Publication)results.next();
