@@ -222,28 +222,26 @@ public class PublicationController extends BaseController
 	/**
 	 *  Returns all publications from a given entity 
 	 **/
-	public List<PublicationVO> getPublicationListByEntityValues(String entityName, String entityId) throws SystemException
+	public List<PublicationDetail> getPublicationListByEntityValues(String entityName, String entityId) throws SystemException
 	{
 		Database db = CastorDatabaseService.getDatabase();
 		beginTransaction(db);
-		System.out.println(entityName + " :::" + entityId);
-		List<PublicationVO> res = new ArrayList<PublicationVO>();
+
+		List<PublicationDetail> res = new ArrayList<PublicationDetail>();
 	
 		try
 		{
-			OQLQuery oql = db.getOQLQuery( "SELECT p FROM org.infoglue.cms.entities.publishing.impl.simple.PublicationImpl p WHERE p.publicationDetails.entityClass = $1 AND p.publicationDetails.entityId = $2 order by p.publicationDateTime desc");
-			
+			OQLQuery oql = db.getOQLQuery( "SELECT p FROM org.infoglue.cms.entities.publishing.impl.simple.PublicationDetailImpl p WHERE p.entityClass = $1 AND p.entityId = $2 ORDER BY p.publication.publicationDateTime DESC");
+
 			oql.bind(entityName);
 			oql.bind(entityId);
-			System.out.println("oql: " + oql);
-
+		
 			QueryResults results = oql.execute(Database.READONLY);
 
-			System.out.println("results: " + results);
 			while (results.hasMore())
 			{
-				Publication publication = (Publication)results.next();
-				res.add(publication.getValueObject());
+				PublicationDetail publication = (PublicationDetail)results.next();
+				res.add(publication);
 			}
 		
 			results.close();

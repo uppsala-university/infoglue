@@ -31,6 +31,8 @@ import javax.servlet.jsp.JspTagException;
 
 import org.infoglue.cms.controllers.kernel.impl.simple.PublicationController;
 import org.infoglue.cms.entities.publishing.PublicationVO;
+import org.infoglue.cms.entities.publishing.PublicationDetail;
+import org.infoglue.cms.entities.publishing.PublicationDetailVO;
 import org.infoglue.cms.exception.SystemException;
 import org.infoglue.deliver.taglib.AbstractTag;
 
@@ -49,7 +51,7 @@ public class EntityPublicationTag extends AbstractTag
 	public int doEndTag() throws JspTagException
     {
 		try {
-			List<PublicationVO> publicationList = PublicationController.getController().getPublicationListByEntityValues(entityName, entityId);
+			List<PublicationDetail> publicationList = PublicationController.getController().getPublicationListByEntityValues(entityName, entityId);
 
 			if (publicationList != null && publicationList.size() > 0) {
 				setResultAttribute(publicationList.get(0));
