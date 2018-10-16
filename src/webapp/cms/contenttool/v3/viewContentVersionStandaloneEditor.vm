@@ -391,10 +391,15 @@
 						var WYSIWYGExtraConfig = plainEditorsExtraConfig[plainTextAreaName];
 						//alert("Creating a textarea for " + plainTextAreaName + " = " + i);
 						document.getElementById(plainTextAreaName).value = transformAttribute(document.getElementById(plainTextAreaName).value);
-	
-						var configString = "{'customConfig': '${root}/WYSIWYGProperties.action?repositoryId=$!repositoryId&contentId=$!contentId&languageId=$languageId&contentVersionId=$!contentVersionId','language': '$languageCode', 'toolbar': '" + WYSIWYGToolbar + "', 'width':'" + $("#" + plainTextAreaName).width() + "px', 'height':'" + $("#" + plainTextAreaName).height() + "px'}";
-			 			if(WYSIWYGExtraConfig && WYSIWYGExtraConfig != '')
-			 				configString = "{'customConfig': '${root}/WYSIWYGProperties.action?repositoryId=$!repositoryId&contentId=$!contentId&languageId=$languageId&contentVersionId=$!contentVersionId','language': '$languageCode', 'toolbar': '" + WYSIWYGToolbar + "', 'width':'" + $("#" + plainTextAreaName).width() + "px', 'height':'" + $("#" + plainTextAreaName).height() + "px'," + WYSIWYGExtraConfig + "}";
+                        
+                        var elementWidth = document.getElementById(plainTextAreaName).style.width;
+                        var elementHeight = document.getElementById(plainTextAreaName).style.height;
+                        
+						var configString = "{'customConfig': '${root}/WYSIWYGProperties.action?repositoryId=$!repositoryId&contentId=$!contentId&languageId=$languageId&contentVersionId=$!contentVersionId','language': '$languageCode', 'toolbar': '" + WYSIWYGToolbar + "', 'width':'" + elementWidth + "px', 'height':'" + elementHeight + "px'}";
+                        
+			 			if(WYSIWYGExtraConfig && WYSIWYGExtraConfig != ''){
+			 				configString = "{'customConfig': '${root}/WYSIWYGProperties.action?repositoryId=$!repositoryId&contentId=$!contentId&languageId=$languageId&contentVersionId=$!contentVersionId','language': '$languageCode', 'toolbar': '" + WYSIWYGToolbar + "', 'width':'" + elementWidth + "px', 'height':'" + elementHeight + "px'," + WYSIWYGExtraConfig + "}";
+                        }
 			 			var configObject = eval('(' + configString + ')');
 				
 						CKEDITOR.replace( plainTextAreaName, configObject);
