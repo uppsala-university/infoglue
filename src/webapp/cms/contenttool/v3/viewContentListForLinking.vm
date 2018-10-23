@@ -20,7 +20,7 @@
 		
 		jQuery(document).ready(function() {
 			#if($anchorId)
-            jQuery("li#$!anchorId").addClass("selected-content");
+				jQuery("li#$anchorId").addClass("selected-content");
 		  	#end
 		  	
 			jQuery("li.content-item").click(function() {

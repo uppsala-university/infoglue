@@ -410,7 +410,7 @@ public class ThreadMonitor implements Runnable
 				threadCount++;
 		    }
 	        		 
-	        logger.warn(stackString);
+	        logger.info(stackString);
 	
 	        String warningEmailReceiver = CmsPropertyHandler.getWarningEmailReceiver();
 	        if(warningEmailReceiver != null && !warningEmailReceiver.equals("") && warningEmailReceiver.indexOf("@warningEmailReceiver@") == -1)
@@ -428,7 +428,7 @@ public class ThreadMonitor implements Runnable
 		}
 		else
 		{
-			logger.warn("A thread took to long but the system seems to be really clogged so we don't send this one.");
+			logger.info("A thread took to long but the system seems to be really clogged so we don't send this one.");
 		}
 		
 	}

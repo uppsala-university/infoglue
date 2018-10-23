@@ -404,7 +404,7 @@ public class InfoGlueJDBCPropertySet extends JDBCPropertySet
 	            	}
             	}
             }
-            logger.warn("All rows in InfoGlueJDBCPropertySet [" + rows + "] took: " + t.getElapsedTime());
+            logger.info("All rows in InfoGlueJDBCPropertySet [" + rows + "] took: " + t.getElapsedTime());
 
             allKeysCachedType5 = true;
             if(type == 10)

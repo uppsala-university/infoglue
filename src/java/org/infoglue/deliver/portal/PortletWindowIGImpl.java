@@ -107,7 +107,7 @@ class PortletWindowIGImpl implements PortletWindowIG
             String contents = sw.toString();
             if (contents.length() == 0) 
             {
-                log.warn("Rendering generated an empty string");
+                log.info("Rendering generated an empty string");
             }
             
             log.debug("render(" + renderWindow.getPortletEntity().getId() + ", " + renderWindow.getId() + ") done");
