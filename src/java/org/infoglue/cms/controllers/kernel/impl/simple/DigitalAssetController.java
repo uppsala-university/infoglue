@@ -2979,7 +2979,7 @@ public class DigitalAssetController extends BaseController
 	/**
 	 * Return true if the asset identified by assetId is available in the specified state.
 	 */
-	public Boolean isAssetAvailableInState(Integer assetId, Integer stateId) throws SystemException {
+	public Boolean isAssetAvailableInState(Integer assetId, Integer stateId, Boolean mustBeLatest) throws SystemException {
 		Boolean available = false;
 		Database db = CastorDatabaseService.getDatabase();
 
@@ -2987,8 +2987,8 @@ public class DigitalAssetController extends BaseController
         
         try
         {
-        	available = isAssetAvailableInState(assetId, stateId, db);
-            commitTransaction(db);            
+        	available = isAssetAvailableInState(assetId, stateId, mustBeLatest, db);
+            commitTransaction(db);
         }
         catch(Exception e)
         {
@@ -3027,7 +3027,7 @@ public class DigitalAssetController extends BaseController
 	/**
 	 * Return true if the asset identified by assetId is available in the specified state.
 	 */
-	public Boolean isAssetAvailableInState(Integer assetId, Integer stateId, Database db) throws PersistenceException {
+	public Boolean isAssetAvailableInState(Integer assetId, Integer stateId, Boolean mustBeLatest, Database db) throws PersistenceException {
 		logger.debug("Making a sql call for assets on " + assetId + ", " + stateId);
 
 		String sql = "SELECT cv.contentVersionId, cv.stateId, cv.modifiedDateTime, cv.versionComment, cv.isCheckedOut, cv.isActive, cv.contentId, cv.languageId, cv.versionModifier FROM cmContentVersionDigitalAsset cvda, cmContentVersion cv WHERE cvda.contentVersionId = cv.contentVersionId AND cv.isActive = 1 AND cv.stateId >= $1 AND cvda.digitalAssetId = $2";
@@ -3038,6 +3038,19 @@ public class DigitalAssetController extends BaseController
     	QueryResults results = oql.execute(Database.READONLY);
 		
 		Boolean available = results.hasMore();
+
+		if (available && mustBeLatest) {
+			try {
+				available = false;
+				for (SmallestContentVersionImpl version = (SmallestContentVersionImpl) results.next(); results.hasMore() && !available; version = (SmallestContentVersionImpl) results.next()) {
+					ContentVersionVO latestActiveVersion = ContentVersionController.getContentVersionController().getLatestActiveContentVersionVO(version.getContentId(), version.getLanguageId(), stateId);
+					available = available || version.getId() == latestActiveVersion.getId();
+				}
+			} catch (Exception e) {
+				logger.warn("Could not get latest active version for asset " + assetId + " in state " + stateId, e);
+				available = false;
+			}
+		}
 		
 		results.close();
 		oql.close();
