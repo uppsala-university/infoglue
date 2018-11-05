@@ -1894,7 +1894,7 @@
   </class>
 
 <!--  Mapping for PublicationDetail  -->
-  <class name="org.infoglue.cms.entities.publishing.impl.simple.PublicationDetailImpl" depends="org.infoglue.cms.entities.publishing.impl.simple.PublicationImpl" identity="publicationDetailId" key-generator="IDENTITY">
+  <class name="org.infoglue.cms.entities.publishing.impl.simple.PublicationDetailImpl" identity="publicationDetailId" key-generator="IDENTITY">
     <description>PublicationDetail</description>
     <cache-type type="unlimited" capacity="10000"/>
     <map-to table="cmPublicationDetail"/>
@@ -1922,9 +1922,7 @@
     <field name="creationDateTime" type="java.util.Date">
       <sql name="creationDateTime" type="timestamp" dirty="ignore" />
     </field>
-	<field name="creator" type="java.lang.String">
-      <sql name="publisher" type="varchar" dirty="check" />
-    </field>
+
   </class>
 
 	<!--  Mapping for Category  -->
