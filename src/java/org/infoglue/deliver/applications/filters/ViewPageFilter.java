@@ -527,7 +527,7 @@ public class ViewPageFilter implements Filter
             return repositoryVOList;
         }
 
-        Set<RepositoryVO> repositories = RepositoryDeliveryController.getRepositoryDeliveryController().getRepositoryVOListFromServerName(db, serverName, portNumber, repositoryName, requestURI);
+        Set<RepositoryVO> repositories = RepositoryDeliveryController.getRepositoryDeliveryController().getRepositoryVOListFromServerName(db, serverName, portNumber, repositoryName, firstPath);
         if(logger.isInfoEnabled())
         	logger.info("repositories:" + repositories);
         
