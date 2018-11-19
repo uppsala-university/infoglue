@@ -518,6 +518,10 @@ public class ViewPageFilter implements Filter
         if(splitPath.length > 1)
         	firstPath = splitPath[0] + "/" + splitPath[1];
 
+        if (firstPath.endsWith("/")) {
+        	firstPath.substring(0, firstPath.lastIndexOf("/"));
+        }
+        
         String repCacheKey = "" + serverName + "_" + portNumber + "_" + repositoryName + "_" + firstPath;
         logger.info("repCacheKey:" + repCacheKey);
         Set<RepositoryVO> repositoryVOList = (Set<RepositoryVO>)CacheController.getCachedObject(uriCache.CACHE_NAME, repCacheKey);
