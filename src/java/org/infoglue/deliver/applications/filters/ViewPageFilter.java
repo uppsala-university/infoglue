@@ -516,7 +516,7 @@ public class ViewPageFilter implements Filter
         	firstPath = firstPath.substring(1);
         String[] splitPath = firstPath.split("/");
         if(splitPath.length > 2)
-        	firstPath = "/" + splitPath[0] + "/" + splitPath[1];
+        	firstPath = splitPath[0] + "/" + splitPath[1];
 
         String repCacheKey = "" + serverName + "_" + portNumber + "_" + repositoryName + "_" + firstPath;
         logger.info("repCacheKey:" + repCacheKey);
@@ -555,7 +555,6 @@ public class ViewPageFilter implements Filter
             }
         }
         //t.printElapsedTime("getRepositoryVOListFromServerName took");
-        
         CacheController.cacheObject(uriCache.CACHE_NAME, repCacheKey, repositories);
         //session.setAttribute(FilterConstants.REPOSITORY_ID, repository.getRepositoryId());
         return repositories;
