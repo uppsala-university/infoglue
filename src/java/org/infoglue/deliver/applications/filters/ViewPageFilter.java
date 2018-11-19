@@ -515,7 +515,7 @@ public class ViewPageFilter implements Filter
         if(firstPath.startsWith("/"))
         	firstPath = firstPath.substring(1);
         String[] splitPath = firstPath.split("/");
-        if(splitPath.length > 2)
+        if(splitPath.length > 1)
         	firstPath = splitPath[0] + "/" + splitPath[1];
 
         String repCacheKey = "" + serverName + "_" + portNumber + "_" + repositoryName + "_" + firstPath;
