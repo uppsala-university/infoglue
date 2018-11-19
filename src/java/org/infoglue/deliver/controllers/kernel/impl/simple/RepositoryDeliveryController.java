@@ -220,12 +220,7 @@ public class RepositoryDeliveryController extends BaseDeliveryController
 	            String livePathAlternative2 = livePath;
 	            if(livePathAlternative2 != null)
 	            	livePathAlternative2 = URLEncoder.encode(livePathAlternative2, (niceURIEncoding.indexOf("8859") > -1 ? "utf-8" : "iso-8859-1")).replaceAll("\\+", "%20");
-	            if (url.contains("research")) {
-	            System.out.println("url was:" + url);
-	            System.out.println("livePath:" + livePath);
-	            System.out.println("livePathAlternative1:" + livePathAlternative1);
-	            System.out.println("livePathAlternative2:" + livePathAlternative2);
-	            }
+
 	            if(livePath != null && !livePath.startsWith(url) && !livePathAlternative1.startsWith(url) && !livePathAlternative2.startsWith(url))
 	            {
 	            	logger.info("This repo had a live path but the url did not include any sign of it - let's skip it");
