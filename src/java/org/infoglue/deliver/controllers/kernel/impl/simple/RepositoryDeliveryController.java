@@ -206,7 +206,7 @@ public class RepositoryDeliveryController extends BaseDeliveryController
 	            if(workingPathAlternative2 != null)
 	            	workingPathAlternative2 = URLEncoder.encode(workingPathAlternative2, (niceURIEncoding.indexOf("8859") > -1 ? "utf-8" : "iso-8859-1")).replaceAll("\\+", "%20");
  
-	            if(workingPath != null && url.indexOf(workingPath) == -1 && url.indexOf(workingPathAlternative1) == -1 && url.indexOf(workingPathAlternative2) == -1)
+	            if(workingPath != null && !workingPath.startsWith(url) && !workingPathAlternative1.startsWith(url) && !workingPathAlternative2.startsWith(url))
 	            {
 	            	logger.info("This repo had a working path but the url did not include any sign of it - let's skip it");
 	            	continue;
@@ -221,7 +221,7 @@ public class RepositoryDeliveryController extends BaseDeliveryController
 	            if(livePathAlternative2 != null)
 	            	livePathAlternative2 = URLEncoder.encode(livePathAlternative2, (niceURIEncoding.indexOf("8859") > -1 ? "utf-8" : "iso-8859-1")).replaceAll("\\+", "%20");
 	            
-	            if(livePath != null && url.indexOf(livePath) == -1 && url.indexOf(livePathAlternative1) == -1 && url.indexOf(livePathAlternative2) == -1)
+	            if(livePath != null && !livePath.startsWith(url) && !livePathAlternative1.startsWith(url) && !livePathAlternative2.startsWith(url))
 	            {
 	            	logger.info("This repo had a live path but the url did not include any sign of it - let's skip it");
 	            	continue;
