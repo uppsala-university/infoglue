@@ -514,13 +514,10 @@ public class ViewPageFilter implements Filter
         logger.info("firstPath:" + firstPath);
         if(firstPath.startsWith("/"))
         	firstPath = firstPath.substring(1);
+
         String[] splitPath = firstPath.split("/");
         
         firstPath = splitPath[0];
-
-        if (firstPath.endsWith("/")) {
-        	firstPath = firstPath.substring(0, firstPath.lastIndexOf("/"));
-        }
         
         String repCacheKey = "" + serverName + "_" + portNumber + "_" + repositoryName + "_" + firstPath;
         logger.info("repCacheKey:" + repCacheKey);
