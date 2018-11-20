@@ -515,9 +515,13 @@ public class ViewPageFilter implements Filter
         if(firstPath.startsWith("/"))
         	firstPath = firstPath.substring(1);
         String[] splitPath = firstPath.split("/");
-        if(splitPath.length > 2)
-        	firstPath = "/" + splitPath[0] + "/" + splitPath[1];
+        if(splitPath.length > 1)
+        	firstPath = splitPath[0] + "/" + splitPath[1];
 
+        if (firstPath.endsWith("/")) {
+        	firstPath = firstPath.substring(0, firstPath.lastIndexOf("/"));
+        }
+        
         String repCacheKey = "" + serverName + "_" + portNumber + "_" + repositoryName + "_" + firstPath;
         logger.info("repCacheKey:" + repCacheKey);
         Set<RepositoryVO> repositoryVOList = (Set<RepositoryVO>)CacheController.getCachedObject(uriCache.CACHE_NAME, repCacheKey);
@@ -527,7 +531,7 @@ public class ViewPageFilter implements Filter
             return repositoryVOList;
         }
 
-        Set<RepositoryVO> repositories = RepositoryDeliveryController.getRepositoryDeliveryController().getRepositoryVOListFromServerName(db, serverName, portNumber, repositoryName, requestURI);
+        Set<RepositoryVO> repositories = RepositoryDeliveryController.getRepositoryDeliveryController().getRepositoryVOListFromServerName(db, serverName, portNumber, repositoryName, firstPath);
         if(logger.isInfoEnabled())
         	logger.info("repositories:" + repositories);
         
@@ -555,7 +559,6 @@ public class ViewPageFilter implements Filter
             }
         }
         //t.printElapsedTime("getRepositoryVOListFromServerName took");
-        
         CacheController.cacheObject(uriCache.CACHE_NAME, repCacheKey, repositories);
         //session.setAttribute(FilterConstants.REPOSITORY_ID, repository.getRepositoryId());
         return repositories;
