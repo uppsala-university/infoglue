@@ -519,7 +519,7 @@ public class ViewPageFilter implements Filter
         	firstPath = splitPath[0] + "/" + splitPath[1];
 
         if (firstPath.endsWith("/")) {
-        	firstPath.substring(0, firstPath.lastIndexOf("/"));
+        	firstPath = firstPath.substring(0, firstPath.lastIndexOf("/"));
         }
         
         String repCacheKey = "" + serverName + "_" + portNumber + "_" + repositoryName + "_" + firstPath;

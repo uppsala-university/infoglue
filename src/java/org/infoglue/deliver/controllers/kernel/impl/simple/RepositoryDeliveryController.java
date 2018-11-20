@@ -221,9 +221,10 @@ public class RepositoryDeliveryController extends BaseDeliveryController
 	            if(livePathAlternative2 != null)
 	            	livePathAlternative2 = URLEncoder.encode(livePathAlternative2, (niceURIEncoding.indexOf("8859") > -1 ? "utf-8" : "iso-8859-1")).replaceAll("\\+", "%20");
 
+	            
 	            if(livePath != null && !livePath.startsWith(url) && !livePathAlternative1.startsWith(url) && !livePathAlternative2.startsWith(url))
 	            {
-	            	logger.info("This repo had a live path but the url did not include any sign of it - let's skip it");
+	            	logger.info("This repo had a live path but the url(" + url + ") did not include any sign of it in "+ livePath + ", " + livePathAlternative1 + ", " + livePathAlternative2 + "- let's skip it");
 	            	continue;
 	            }
 	        }
