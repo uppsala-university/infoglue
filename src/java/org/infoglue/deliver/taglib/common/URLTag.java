@@ -274,7 +274,7 @@ public class URLTag extends TemplateControllerTag
 	    }
 	    logger.info("newBaseUrl:" + newBaseUrl);
 	    
-	    if (forceHTTPProtocol && newBaseUrl.toLowerCase().startsWith("https"))
+	    if ((forceHTTPProtocol == null && CmsPropertyHandler.getForceHTTPProtocol() || forceHTTPProtocol) && (newBaseUrl != null && newBaseUrl.toLowerCase().startsWith("https")))
 	    {
 	    	newBaseUrl = newBaseUrl.replaceFirst("(?i)https", "http");
 	    }
