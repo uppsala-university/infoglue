@@ -43,7 +43,7 @@ public class PageUrlTag extends ComponentLogicTag
 	private boolean useInheritance = true;
 	private boolean useRepositoryInheritance = true;
     private boolean useStructureInheritance = true;
-    private Boolean forceHTTPProtocol = null; // null means "not set with parameter"
+    private Boolean forceHTTPProtocol = false; // null means "not set with parameter"
     private boolean includeLanguageId = true;
     private Boolean isDecorated;
 	private Integer siteNodeId;
@@ -73,7 +73,7 @@ public class PageUrlTag extends ComponentLogicTag
         this.includeLanguageId = true;
         this.operatingMode = null;
         this.isDecorated = null;
-        this.forceHTTPProtocol = null;
+        this.forceHTTPProtocol = false;
         
         return EVAL_PAGE;
     }
@@ -121,8 +121,8 @@ public class PageUrlTag extends ComponentLogicTag
 		    	dc.setOperatingMode(tempOperatingMode);	
 	    	}
 	    }
-		
-	    if ((forceHTTPProtocol == null && CmsPropertyHandler.getForceHTTPProtocol() || forceHTTPProtocol) && url.toLowerCase().startsWith("https"))
+	    
+	    if ((CmsPropertyHandler.getForceHTTPProtocol() || forceHTTPProtocol) && (url != null && url.toLowerCase().startsWith("https")))
 	    {
 	    	url = url.replaceFirst("https", "http");
 	    }
