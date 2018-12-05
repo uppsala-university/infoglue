@@ -119,7 +119,7 @@
         </init-param>
 		
 	</filter>
-	
+
 	<!-- This filter sets expires headers and gzip the appropriate resources -->
 	<filter>  
 	    <filter-name>ResourceFilter</filter-name>  
@@ -300,6 +300,9 @@
   
 	<session-config>
 		<session-timeout>30</session-timeout>
+		<cookie-config>
+			<secure>false</secure>
+		</cookie-config>
 	</session-config>
 
 	<mime-mapping>
