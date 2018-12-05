@@ -84,7 +84,7 @@ public class URLTag extends TemplateControllerTag
 	 * Determine if you want to replace https with http
 	 * null means "not set with parameter"
 	 */
-	private Boolean forceHTTPProtocol = null;
+	private Boolean forceHTTPProtocol = false;
 	
 	/**
 	 * The parameters to use when constructing the url.
@@ -153,7 +153,7 @@ public class URLTag extends TemplateControllerTag
 		this.disableNiceURI = false;
 		this.allowMultipleArguments = false;
 		this.includeCurrentQueryString = true;
-		this.forceHTTPProtocol = null;
+		this.forceHTTPProtocol = false;
 		
 		return EVAL_PAGE;
     }
@@ -272,9 +272,10 @@ public class URLTag extends TemplateControllerTag
 	        logger.warn("Error getting url:" + e.getMessage(), e);
 	        newBaseUrl = (baseURL == null) ? getRequest().getRequestURL().toString() : baseURL;
 	    }
+
 	    logger.info("newBaseUrl:" + newBaseUrl);
-	    
-	    if ((forceHTTPProtocol == null && CmsPropertyHandler.getForceHTTPProtocol() || forceHTTPProtocol) && newBaseUrl.toLowerCase().startsWith("https"))
+	   
+	    if ((CmsPropertyHandler.getForceHTTPProtocol() || forceHTTPProtocol) && (newBaseUrl != null && newBaseUrl.toLowerCase().startsWith("https")))
 	    {
 	    	newBaseUrl = newBaseUrl.replaceFirst("(?i)https", "http");
 	    }
