@@ -2722,7 +2722,7 @@ public class RegistryController extends BaseController
 		                    }
 		                    else if (onlyLatestVersion)
 							{
-								ContentVersionVO latestContentVersion = ContentVersionController.getContentVersionController().getLatestActiveContentVersionVO(contentVersion.getContentId(), contentVersion.getLanguageId(), ContentVersionVO.WORKING_STATE, db);
+								ContentVersionVO latestContentVersion = ContentVersionController.getContentVersionController().getLatestActiveContentVersionVO(contentVersion.getContentId(), contentVersion.getLanguageId(), ContentVersionVO.WORKING_STATE, db, true);
 
 								if (logger.isDebugEnabled())
 								{

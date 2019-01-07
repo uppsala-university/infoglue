@@ -3150,7 +3150,7 @@ public class CacheController extends Thread
 									    		if((changes == null || changes.size() == 0) && CmsPropertyHandler.getOperatingMode().equals("3"))
 									    		{
 									    			ContentVersionVO oldContentVersionVO = ContentVersionController.getContentVersionController().getContentVersionVOWithId(new Integer(entityId));
-										    		ContentVersionVO newContentVersionVO = ContentVersionController.getContentVersionController().getLatestActiveContentVersionVO(contentId, oldContentVersionVO.getLanguageId(), new Integer(CmsPropertyHandler.getOperatingMode()));
+										    		ContentVersionVO newContentVersionVO = ContentVersionController.getContentVersionController().getLatestActiveContentVersionVO(contentId, oldContentVersionVO.getLanguageId(), new Integer(CmsPropertyHandler.getOperatingMode()), true);
 										    		if(newContentVersionVO != null && oldContentVersionVO != null && newContentVersionVO.getId().equals(oldContentVersionVO.getId()))
 										    		{
 										    			oldContentVersionVO = null;
@@ -3302,7 +3302,7 @@ public class CacheController extends Thread
 									    			oldContentVersionVO = ContentVersionController.getContentVersionController().getContentVersionVOWithId(new Integer(entityId));
 									    			debug += "oldContentVersionVO:" + oldContentVersionVO.getId() + ":" + oldContentVersionVO.getLanguageId() + "\n";
 									    			debug += "oldContentVersionVO:" + CmsPropertyHandler.getOperatingMode() + "\n";
-										    		newContentVersionVO = ContentVersionController.getContentVersionController().getLatestActiveContentVersionVO(contentId, oldContentVersionVO.getLanguageId(), new Integer(CmsPropertyHandler.getOperatingMode()));
+										    		newContentVersionVO = ContentVersionController.getContentVersionController().getLatestActiveContentVersionVO(contentId, oldContentVersionVO.getLanguageId(), new Integer(CmsPropertyHandler.getOperatingMode()), true);
 									    			debug += "newContentVersionVO:" + newContentVersionVO + "\n";
 										    		if(newContentVersionVO != null && oldContentVersionVO != null && newContentVersionVO.getId().equals(oldContentVersionVO.getId()))
 										    		{

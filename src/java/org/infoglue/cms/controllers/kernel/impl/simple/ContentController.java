@@ -3203,11 +3203,11 @@ public class ContentController extends BaseController
 	    
 	    ContentVO contentVO = ContentController.getContentController().getContentVOWithId(contentId, db);
 		
-		ContentVersionVO contentVersionVO = ContentVersionController.getContentVersionController().getLatestActiveContentVersionVO(contentVO.getId(), languageId, stateId, db);
+		ContentVersionVO contentVersionVO = ContentVersionController.getContentVersionController().getLatestActiveContentVersionVO(contentVO.getId(), languageId, stateId, db, true);
 		if(contentVersionVO == null && useLanguageFallBack)
 		{
 			LanguageVO masterLanguageVO = LanguageController.getController().getMasterLanguage(contentVO.getRepositoryId(), db);
-			contentVersionVO = ContentVersionController.getContentVersionController().getLatestActiveContentVersionVO(contentVO.getId(), masterLanguageVO.getId(), stateId, db);
+			contentVersionVO = ContentVersionController.getContentVersionController().getLatestActiveContentVersionVO(contentVO.getId(), masterLanguageVO.getId(), stateId, db, true);
 		}
 		
 		if(contentVersionVO != null)
@@ -4411,7 +4411,7 @@ public class ContentController extends BaseController
 			Integer latestContentVersionId = new Integer(rs.getString(1));
 			Integer totalSize = new Integer(rs.getString(5));
             ContentVersionVO cvVO = ContentVersionController.getContentVersionController().getContentVersionVOWithId(latestContentVersionId);
-            ContentVersionVO lastPublishedCVVO = ContentVersionController.getContentVersionController().getLatestActiveContentVersionVO(cvVO.getContentId(), cvVO.getLanguageId(), ContentVersionVO.PUBLISHED_STATE);
+            ContentVersionVO lastPublishedCVVO = ContentVersionController.getContentVersionController().getLatestActiveContentVersionVO(cvVO.getContentId(), cvVO.getLanguageId(), ContentVersionVO.PUBLISHED_STATE, true);
             if(lastPublishedCVVO != null && cvVO.getId() < lastPublishedCVVO.getId())
             {
             	logger.warn("The found version had an reference to an asset which the latest published version did not... can be removed.");
