@@ -489,7 +489,7 @@ public class RedirectController extends BaseController
 			SiteNodeVO siteNodeVO = SiteNodeController.getSiteNodeVOWithId(siteNodeId, db);
 			for(LanguageVO languageVO : languageVOList)
 			{
-				ContentVersionVO currentPublishedMetainfoVersion = ContentVersionController.getContentVersionController().getLatestActiveContentVersionVO(siteNodeVO.getMetaInfoContentId(), languageVO.getLanguageId(), ContentVersionVO.PUBLISHED_STATE, db);
+				ContentVersionVO currentPublishedMetainfoVersion = ContentVersionController.getContentVersionController().getLatestActiveContentVersionVO(siteNodeVO.getMetaInfoContentId(), languageVO.getLanguageId(), ContentVersionVO.PUBLISHED_STATE, db, true);
 				if (logger.isDebugEnabled())
 				{
 					logger.debug("Getting NiceUri path for SiteNode: " + siteNodeId + ", in language: " + languageVO.getLanguageId() + ". SiteNode has version in current language: " + (currentPublishedMetainfoVersion != null));

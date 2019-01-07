@@ -1961,13 +1961,13 @@ public class LuceneController extends BaseController implements NotificationList
 					RequestAnalyser.getRequestAnalyser().registerComponentStatistics("getLanguageVOList", (t.getElapsedTimeNanos() / 1000));
 					for(LanguageVO language : languages)
 					{
-						ContentVersionVO latestVersion = ContentVersionController.getContentVersionController().getLatestActiveContentVersionVO(contentVO.getId(), language.getId(), Integer.parseInt(CmsPropertyHandler.getOperatingMode()), db);
+						ContentVersionVO latestVersion = ContentVersionController.getContentVersionController().getLatestActiveContentVersionVO(contentVO.getId(), language.getId(), Integer.parseInt(CmsPropertyHandler.getOperatingMode()), db, true);
 						RequestAnalyser.getRequestAnalyser().registerComponentStatistics("getLatestActiveContentVersionVO", (t.getElapsedTimeNanos() / 1000));
 
 						if(latestVersion != null)
 							versions.add(latestVersion);
 
-						ContentVersionVO latestVersionPublishedVersion = ContentVersionController.getContentVersionController().getLatestActiveContentVersionVO(contentVO.getId(), language.getId(), ContentVersionVO.PUBLISHED_STATE, db);
+						ContentVersionVO latestVersionPublishedVersion = ContentVersionController.getContentVersionController().getLatestActiveContentVersionVO(contentVO.getId(), language.getId(), ContentVersionVO.PUBLISHED_STATE, db, true);
 						RequestAnalyser.getRequestAnalyser().registerComponentStatistics("getLatestActiveContentVersionVO", (t.getElapsedTimeNanos() / 1000));
 						if(latestVersionPublishedVersion != null && latestVersionPublishedVersion.getId().intValue() != latestVersion.getId().intValue())
 							versions.add(latestVersionPublishedVersion);
@@ -1980,7 +1980,7 @@ public class LuceneController extends BaseController implements NotificationList
 					RequestAnalyser.getRequestAnalyser().registerComponentStatistics("getLanguageVOList", (t.getElapsedTimeNanos() / 1000));
 					for(LanguageVO language : languages)
 					{
-						ContentVersionVO version = ContentVersionController.getContentVersionController().getLatestActiveContentVersionVO(contentVO.getId(), language.getId(), Integer.parseInt(CmsPropertyHandler.getOperatingMode()), db);
+						ContentVersionVO version = ContentVersionController.getContentVersionController().getLatestActiveContentVersionVO(contentVO.getId(), language.getId(), Integer.parseInt(CmsPropertyHandler.getOperatingMode()), db, true);
 						RequestAnalyser.getRequestAnalyser().registerComponentStatistics("getLatestActiveContentVersionVO", (t.getElapsedTimeNanos() / 1000));
 						if(version != null)
 							versions.add(version);
@@ -2083,7 +2083,7 @@ public class LuceneController extends BaseController implements NotificationList
 			List<LanguageVO> languages = LanguageController.getController().getLanguageVOList(siteNodeVO.getRepositoryId(), db);
 			for(LanguageVO language : languages)
 			{
-				ContentVersionVO cvVO = ContentVersionController.getContentVersionController().getLatestActiveContentVersionVO(siteNodeVO.getMetaInfoContentId(), language.getId(), Integer.parseInt(CmsPropertyHandler.getOperatingMode()), db);
+				ContentVersionVO cvVO = ContentVersionController.getContentVersionController().getLatestActiveContentVersionVO(siteNodeVO.getMetaInfoContentId(), language.getId(), Integer.parseInt(CmsPropertyHandler.getOperatingMode()), db, true);
 				if(cvVO != null)
 					doc.add(new Field("contents", new StringReader(cvVO.getVersionValue())));
 			}

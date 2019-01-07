@@ -571,9 +571,10 @@ public class ContentVersionController extends BaseController
 
    	/**
 	 * This method returns the latest active content version.
+   	 * @param reversed TODO
 	 */
     
-   	public ContentVersionVO getLatestActiveContentVersionVO(Integer contentId, Integer languageId, Integer stateId) throws SystemException, Bug
+   	public ContentVersionVO getLatestActiveContentVersionVO(Integer contentId, Integer languageId, Integer stateId, boolean reversed) throws SystemException, Bug
     {
     	Database db = CastorDatabaseService.getDatabase();
     	ContentVersionVO contentVersionVO = null;
@@ -582,7 +583,7 @@ public class ContentVersionController extends BaseController
 
         try
         {
-        	contentVersionVO = getLatestActiveContentVersionVO(contentId, languageId, stateId, db);
+        	contentVersionVO = getLatestActiveContentVersionVO(contentId, languageId, stateId, db, reversed);
             
             rollbackTransaction(db);
         }
@@ -599,9 +600,10 @@ public class ContentVersionController extends BaseController
 
    	/**
 	 * This method returns the latest active content version.
+   	 * @param reversed Get the first active version instead (this is the default behavior of the calling code in Infoglue for some reason)
 	 */
     
-	public ContentVersionVO getLatestActiveContentVersionVO(Integer contentId, Integer languageId, Integer stateId, Database db) throws SystemException, Bug, Exception
+	public ContentVersionVO getLatestActiveContentVersionVO(Integer contentId, Integer languageId, Integer stateId, Database db, boolean reversed) throws SystemException, Bug, Exception
 	{
 		logger.debug("getLatestActiveContentVersionVO with stateId " + stateId);
 		Timer t = new Timer();
@@ -630,7 +632,8 @@ public class ContentVersionController extends BaseController
 		}
 		else
 		{
-			OQLQuery oql = db.getOQLQuery( "SELECT cv FROM org.infoglue.cms.entities.content.impl.simple.SmallContentVersionImpl cv WHERE cv.contentId = $1 AND cv.languageId = $2 AND cv.stateId >= $3 AND cv.isActive = $4 ORDER BY cv.contentVersionId desc");
+			String order = reversed ? "asc" : "desc";
+			OQLQuery oql = db.getOQLQuery( "SELECT cv FROM org.infoglue.cms.entities.content.impl.simple.SmallContentVersionImpl cv WHERE cv.contentId = $1 AND cv.languageId = $2 AND cv.stateId >= $3 AND cv.isActive = $4 ORDER BY cv.contentVersionId " + order);
 	    	oql.bind(contentId);
 	    	oql.bind(languageId);
 	    	oql.bind(stateId);
@@ -638,9 +641,10 @@ public class ContentVersionController extends BaseController
 	
 	    	QueryResults results = oql.execute(Database.READONLY);
 	    	
-			if (results.hasMore()) 
+	    	ContentVersion contentVersion = null;
+			if (results.hasMore() && contentVersion == null) 
 	        {
-				ContentVersion contentVersion = (ContentVersion)results.next();
+				contentVersion = (ContentVersion)results.next();
 	        	contentVersionVO = contentVersion.getValueObject();
 	
 				CacheController.cacheObjectInAdvancedCache("contentVersionCache", versionKey, contentVersionVO, new String[]{CacheController.getPooledString(2, contentVersionVO.getId()), CacheController.getPooledString(1, contentVersionVO.getContentId())}, true);

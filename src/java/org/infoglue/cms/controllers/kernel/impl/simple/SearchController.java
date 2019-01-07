@@ -1118,7 +1118,7 @@ public class SearchController extends BaseController
 							{
 								if(languageId == null)
 									languageId = LanguageController.getController().getMasterLanguage(snVO.getRepositoryId(), db).getId();
-								ContentVersionVO cvVO = ContentVersionController.getContentVersionController().getLatestActiveContentVersionVO(snVO.getMetaInfoContentId(), languageId, Integer.parseInt(CmsPropertyHandler.getOperatingMode()), db);
+								ContentVersionVO cvVO = ContentVersionController.getContentVersionController().getLatestActiveContentVersionVO(snVO.getMetaInfoContentId(), languageId, Integer.parseInt(CmsPropertyHandler.getOperatingMode()), db, true);
 								logger.info("cvvo:" + cvVO.getContentName() + "(" + cvVO.getContentId() + ")");
 								contentVersionVOList.add(cvVO);
 								t.printElapsedTime("cvVO");

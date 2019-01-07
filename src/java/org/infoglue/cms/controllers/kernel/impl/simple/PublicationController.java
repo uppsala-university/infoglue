@@ -553,7 +553,7 @@ public class PublicationController extends BaseController
 		List<LanguageVO> languageVOs = LanguageController.getController().getAvailableLanguageVOListForRepository(siteNodeVO.getRepositoryId(), db);
 		for (LanguageVO languageVO : languageVOs)
 		{
-			ContentVersionVO currentPublishedMetainfoVersion = ContentVersionController.getContentVersionController().getLatestActiveContentVersionVO(siteNodeVO.getMetaInfoContentId(), languageVO.getLanguageId(), ContentVersionVO.PUBLISHED_STATE, db);
+			ContentVersionVO currentPublishedMetainfoVersion = ContentVersionController.getContentVersionController().getLatestActiveContentVersionVO(siteNodeVO.getMetaInfoContentId(), languageVO.getLanguageId(), ContentVersionVO.PUBLISHED_STATE, db, true);
 			if (currentPublishedMetainfoVersion != null)
 			{
 				String attributeValue = ContentVersionController.getContentVersionController().getAttributeValue(currentPublishedMetainfoVersion, niceUriAttributeName, false);

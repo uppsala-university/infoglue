@@ -1787,7 +1787,7 @@ public class DigitalAssetController extends BaseController
 		logger.debug("stateId is: " + stateId);
     	if (stateId != null) 
     	{
-    		contentVersionVO = ContentVersionController.getContentVersionController().getLatestActiveContentVersionVO(contentId, languageId, stateId, db);
+    		contentVersionVO = ContentVersionController.getContentVersionController().getLatestActiveContentVersionVO(contentId, languageId, stateId, db, true);
     	}
     	else
     	{
@@ -3044,7 +3044,7 @@ public class DigitalAssetController extends BaseController
 			try {
 				available = false;
 				for (SmallestContentVersionImpl version = (SmallestContentVersionImpl) results.next(); results.hasMore() && !available; version = (SmallestContentVersionImpl) results.next()) {
-					ContentVersionVO latestActiveVersion = ContentVersionController.getContentVersionController().getLatestActiveContentVersionVO(version.getContentId(), version.getLanguageId(), stateId);
+					ContentVersionVO latestActiveVersion = ContentVersionController.getContentVersionController().getLatestActiveContentVersionVO(version.getContentId(), version.getLanguageId(), stateId, false);
 					available = available || version.getId() == latestActiveVersion.getId();
 				}
 			} catch (Exception e) {
@@ -3085,7 +3085,7 @@ public class DigitalAssetController extends BaseController
 		
 		if (available && mustBeLatest) {
 			try {
-				ContentVersionVO latestActiveVersion = ContentVersionController.getContentVersionController().getLatestActiveContentVersionVO(contentId, languageId, stateId);
+				ContentVersionVO latestActiveVersion = ContentVersionController.getContentVersionController().getLatestActiveContentVersionVO(contentId, languageId, stateId, true);
 
 				available = false;
 				for (SmallestContentVersionImpl version = (SmallestContentVersionImpl) results.next(); results.hasMore() && !available; version = (SmallestContentVersionImpl) results.next()) {
