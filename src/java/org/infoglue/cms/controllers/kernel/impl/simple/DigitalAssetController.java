@@ -3048,7 +3048,7 @@ public class DigitalAssetController extends BaseController
 				while (results.hasMore() && !available) {
 					SmallestContentVersionImpl version = (SmallestContentVersionImpl) results.next();
 					ContentVersionVO latestActiveVersion = ContentVersionController.getContentVersionController().getLatestActiveContentVersionVO(version.getContentId(), version.getLanguageId(), stateId, false);
-					available = available || version.getId() == latestActiveVersion.getId();
+					available = available || version.getId().equals(latestActiveVersion.getId());
 					logger.debug("Checking latest active version " + latestActiveVersion.getId() + " for content " + version.getContentId() + " against version " + version.getId() + ": available == " + available);
 				}
 			} catch (Exception e) {
