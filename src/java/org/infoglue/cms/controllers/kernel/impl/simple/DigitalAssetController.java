@@ -3087,15 +3087,15 @@ public class DigitalAssetController extends BaseController
 		
 		if (available && mustBeLatest) {
 			try {
-				ContentVersionVO latestActiveVersion = ContentVersionController.getContentVersionController().getLatestActiveContentVersionVO(contentId, languageId, stateId, true);
+				ContentVersionVO latestActiveVersion = ContentVersionController.getContentVersionController().getLatestActiveContentVersionVO(contentId, languageId, stateId, false);
 
 				available = false;
-				for (SmallestContentVersionImpl version = (SmallestContentVersionImpl) results.next(); results.hasMore() && !available; version = (SmallestContentVersionImpl) results.next()) {
-					available = available || version.getId() == latestActiveVersion.getId();
+				while (results.hasMore() && !available) {
+					SmallestContentVersionImpl version = (SmallestContentVersionImpl) results.next();
+					available = available || version.getId().equals(latestActiveVersion.getId());
 				}
 			} catch (Exception e) {
 				logger.warn("Could not get latest active version for content " + contentId + " in state " + stateId, e);
-				available = false;
 			}
 		}
 
