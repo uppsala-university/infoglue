@@ -275,7 +275,7 @@ public class URLTag extends TemplateControllerTag
 
 	    logger.info("newBaseUrl:" + newBaseUrl);
 	    // forceHTTProtocol overrides cmsProperty in whether we should change https protocol
-	    if ((forceHTTPProtocol != null && forceHTTPProtocol || forceHTTPProtocol == null && CmsPropertyHandler.getForceHTTPProtocol()) && newBaseUrl != null && newBaseUrl.toLowerCase().startsWith("https"))
+	    if ((forceHTTPProtocol != null && forceHTTPProtocol || forceHTTPProtocol == null && CmsPropertyHandler.getForceHTTPProtocol()) && newBaseUrl != null)
 	    {
 	    	newBaseUrl = newBaseUrl.replaceFirst("(?i)^https", "http");
 	    }
