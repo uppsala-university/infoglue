@@ -153,7 +153,7 @@ public class URLTag extends TemplateControllerTag
 		this.disableNiceURI = false;
 		this.allowMultipleArguments = false;
 		this.includeCurrentQueryString = true;
-		this.forceHTTPProtocol = false;
+		this.forceHTTPProtocol = null;
 		
 		return EVAL_PAGE;
     }
@@ -274,10 +274,10 @@ public class URLTag extends TemplateControllerTag
 	    }
 
 	    logger.info("newBaseUrl:" + newBaseUrl);
-	   
-	    if ((CmsPropertyHandler.getForceHTTPProtocol() || forceHTTPProtocol) && (newBaseUrl != null && newBaseUrl.toLowerCase().startsWith("https")))
+	    // forceHTTProtocol overrides cmsProperty in whether we should change https protocol
+	    if (forceHTTPProtocol != null && forceHTTPProtocol || (forceHTTPProtocol == null && CmsPropertyHandler.getForceHTTPProtocol()) && (newBaseUrl != null && newBaseUrl.toLowerCase().startsWith("https")))
 	    {
-	    	newBaseUrl = newBaseUrl.replaceFirst("(?i)https", "http");
+	    	newBaseUrl = newBaseUrl.replaceFirst("^(?i)https", "http");
 	    }
 	    
 	    return newBaseUrl;
