@@ -597,12 +597,16 @@ public class ContentVersionController extends BaseController
     	
 		return contentVersionVO;
     }
-
+   	
+   	public ContentVersionVO getLatestActiveContentVersionVO(Integer contentId, Integer languageId, Integer stateId, Database db) throws SystemException, Bug, Exception
+   	{
+   		return getLatestActiveContentVersionVO(contentId, languageId, stateId, db, false);
+   	}
+   	
    	/**
 	 * This method returns the latest active content version.
    	 * @param reversed Get the first active version instead (this is the default behavior of the calling code in Infoglue for some reason)
 	 */
-    
 	public ContentVersionVO getLatestActiveContentVersionVO(Integer contentId, Integer languageId, Integer stateId, Database db, boolean reversed) throws SystemException, Bug, Exception
 	{
 		logger.debug("getLatestActiveContentVersionVO with stateId " + stateId);
